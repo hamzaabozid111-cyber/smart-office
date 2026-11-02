@@ -1,0 +1,1133 @@
+<!doctype html>
+<html lang="ar" dir="rtl"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><meta name="theme-color" content="#0D3339"><meta name="mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="SMART OFFICE"><link rel="manifest" href="manifest.json"><link rel="icon" href="icon-192.png"><link rel="apple-touch-icon" href="icon-192.png"></head><body>
+<title>SMART OFFICE</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Arabic:wght@400;500;600;700&family=Readex+Pro:wght@500;600;700&display=swap" rel="stylesheet">
+<style>
+/* Layout: floating right-hand navigation panel + working area (RTL). Phone: sticky top bar + bottom tab bar. */
+:root{
+  --bg:#F1F5F6;--surface:#FFFFFF;--surface2:#F6F9FA;--line:#DAE2E5;--fg:#13262C;--muted:#5A6E75;
+  --primary:#0F5C63;--primary-fg:#FFFFFF;--primary-soft:#DFEFEF;--brass:#B7791F;
+  --side:#0D3339;--side-fg:#CFE0E2;--side-active:#17525A;
+  --good:#1B7F55;--good-soft:#E0F2E9;--warn:#9A5B06;--warn-soft:#FBEED6;--bad:#B93434;--bad-soft:#F9E1E1;--info:#2B64A8;--info-soft:#E1EBF7;
+  --shadow:0 1px 2px rgba(10,40,46,.06),0 6px 20px rgba(10,40,46,.06);
+  --f-body:'IBM Plex Sans Arabic',Tahoma,'Segoe UI',system-ui,sans-serif;--f-disp:'Readex Pro','IBM Plex Sans Arabic',Tahoma,system-ui,sans-serif;
+}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
+  --bg:#0C171B;--surface:#132329;--surface2:#183038;--line:#25404A;--fg:#E3EEF0;--muted:#8FA8AF;
+  --primary:#52B6BD;--primary-fg:#06262A;--primary-soft:#173B41;--brass:#E0A64A;
+  --side:#091215;--side-fg:#B9CFD2;--side-active:#17383E;
+  --good:#52C792;--good-soft:#14382B;--warn:#E8B058;--warn-soft:#3B2D12;--bad:#F08585;--bad-soft:#40191B;--info:#7DB3EE;--info-soft:#172F4B;
+  --shadow:0 1px 2px rgba(0,0,0,.3),0 6px 20px rgba(0,0,0,.25);color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#0C171B;--surface:#132329;--surface2:#183038;--line:#25404A;--fg:#E3EEF0;--muted:#8FA8AF;
+  --primary:#52B6BD;--primary-fg:#06262A;--primary-soft:#173B41;--brass:#E0A64A;
+  --side:#091215;--side-fg:#B9CFD2;--side-active:#17383E;
+  --good:#52C792;--good-soft:#14382B;--warn:#E8B058;--warn-soft:#3B2D12;--bad:#F08585;--bad-soft:#40191B;--info:#7DB3EE;--info-soft:#172F4B;
+  --shadow:0 1px 2px rgba(0,0,0,.3),0 6px 20px rgba(0,0,0,.25);color-scheme:dark}
+*{box-sizing:border-box}
+body{margin:0;direction:rtl;font-family:var(--f-body);font-size:15px;line-height:1.6;background:var(--bg);color:var(--fg);
+  padding-block:16px;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top,0px);z-index:60;background:var(--surface)}
+body.noscroll{overflow:hidden}
+h1,h2,h3,h4{font-family:var(--f-disp);margin:0;font-weight:600;text-wrap:balance}
+button,input,select,textarea{font:inherit;color:inherit}
+a{color:var(--primary)}
+.num{font-family:var(--f-disp);font-variant-numeric:tabular-nums}
+.muted{color:var(--muted)}.sm{font-size:13px}.xs{font-size:12px}
+.hide{display:none!important}
+:focus-visible{outline:2px solid var(--primary);outline-offset:2px}
+
+/* login */
+.login-wrap{min-height:calc(100vh - 32px);display:grid;place-items:center}
+.login{width:100%;max-width:420px;background:var(--surface);border:1px solid var(--line);border-radius:16px;box-shadow:var(--shadow);padding:28px;display:grid;gap:16px}
+.brand{display:flex;align-items:center;gap:12px}
+.logo{width:44px;height:44px;border-radius:12px;background:var(--side);display:grid;place-items:center;color:#fff;flex:none;position:relative}
+.logo svg{width:24px;height:24px}
+.logo img{width:100%;height:100%;object-fit:cover;border-radius:inherit}
+.logo::after{content:"";position:absolute;inset-inline-start:-4px;bottom:-4px;width:12px;height:12px;border-radius:50%;background:var(--brass);border:2px solid var(--surface)}
+.brand b{font-family:var(--f-disp);letter-spacing:.12em;font-size:18px;display:block;line-height:1.2}
+.brand small{color:var(--muted);font-size:12px}
+.hint-box{background:var(--warn-soft);color:var(--warn);border-radius:10px;padding:10px 12px;font-size:13px}
+.hint-box code{background:rgba(0,0,0,.07);padding:0 5px;border-radius:4px;font-family:var(--f-disp)}
+
+/* shell */
+.shell{display:flex;gap:16px;align-items:flex-start}
+.side{width:236px;flex:none;position:sticky;top:16px;height:calc(100vh - 32px);background:var(--side);color:var(--side-fg);border-radius:16px;padding:14px 10px;display:flex;flex-direction:column;gap:6px;overflow:auto}
+.side .brand{padding:6px 8px 14px}.side .brand b{color:#fff}.side .brand small{color:var(--side-fg);opacity:.7}
+.side .logo{background:var(--side-active)}.side .logo::after{border-color:var(--side)}
+.nav{display:grid;gap:2px}
+.nav a{display:flex;align-items:center;gap:10px;padding:9px 10px;border-radius:10px;color:var(--side-fg);text-decoration:none;font-size:14px;position:relative}
+.nav a svg{width:19px;height:19px;flex:none;opacity:.85}
+.nav a:hover{background:rgba(255,255,255,.06)}
+.nav a.on{background:var(--side-active);color:#fff;font-weight:600}
+.nav a.on::before{content:"";position:absolute;inset-inline-start:-10px;top:9px;bottom:9px;width:4px;border-radius:4px;background:var(--brass)}
+.nav .badge{margin-inline-start:auto;background:var(--bad);color:#fff;border-radius:99px;font-size:11px;padding:0 7px;line-height:18px;font-family:var(--f-disp)}
+.nav .badge.soft{background:rgba(255,255,255,.14)}
+.side-foot{margin-top:auto;padding:10px 8px 2px;border-top:1px solid rgba(255,255,255,.1);font-size:13px;display:grid;gap:8px}
+.side-foot b{color:#fff;display:block}
+.main{flex:1;min-width:0;display:grid;gap:16px}
+.top{display:flex;align-items:center;gap:10px;background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:8px 10px;position:sticky;top:max(16px,env(safe-area-inset-top,0px));z-index:30}
+.top h2{font-size:17px;white-space:nowrap}
+.gsearch{position:relative;flex:1;min-width:0;max-width:460px;margin-inline-start:auto}
+.gsearch input{width:100%;border:1px solid var(--line);background:var(--surface2);border-radius:10px;padding:8px 36px 8px 12px;outline-offset:0}
+.gsearch>svg{position:absolute;inset-inline-start:auto;right:10px;top:50%;transform:translateY(-50%);width:18px;height:18px;color:var(--muted);pointer-events:none}
+.gres{position:absolute;top:calc(100% + 6px);right:0;left:0;background:var(--surface);border:1px solid var(--line);border-radius:12px;box-shadow:var(--shadow);max-height:60vh;overflow:auto;z-index:40;padding:6px}
+.gres h5{margin:8px 8px 2px;font-size:12px;color:var(--muted);font-weight:600}
+.gres .it{display:flex;gap:8px;justify-content:space-between;padding:8px;border-radius:8px;cursor:pointer;align-items:center}
+.gres .it:hover{background:var(--primary-soft)}
+.icon-btn{width:38px;height:38px;border-radius:10px;border:1px solid var(--line);background:var(--surface);display:grid;place-items:center;cursor:pointer;position:relative;flex:none;padding:0}
+.icon-btn:hover{background:var(--primary-soft)}
+.icon-btn svg{width:19px;height:19px}
+.icon-btn .dot{position:absolute;top:-5px;inset-inline-start:-5px;background:var(--bad);color:#fff;border-radius:99px;font-size:11px;min-width:18px;line-height:18px;text-align:center;font-family:var(--f-disp)}
+.menu-btn{display:none}
+#view{display:grid;gap:16px;min-width:0}
+.bottom{display:none}
+
+/* blocks */
+.card{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:16px;min-width:0}
+.card.flat{box-shadow:none}
+.card-h{display:flex;align-items:center;gap:10px;justify-content:space-between;margin-bottom:12px;flex-wrap:wrap}
+.card-h h3{font-size:16px}
+.page-h{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap}
+.page-h h1{font-size:22px}
+.banner{display:flex;gap:12px;align-items:center;flex-wrap:wrap;border-radius:12px;padding:10px 14px;font-size:14px}
+.banner.warn{background:var(--warn-soft);color:var(--warn)}.banner.bad{background:var(--bad-soft);color:var(--bad)}.banner.info{background:var(--info-soft);color:var(--info)}
+.banner .btn{margin-inline-start:auto}
+.hello{display:grid;gap:4px}
+.hello p{margin:0;color:var(--muted)}
+.hello .lead{color:var(--fg);font-size:16px}
+.kgroup{display:grid;gap:8px}
+.kgroup>h4{font-size:13px;color:var(--muted);font-weight:600;letter-spacing:.02em}
+.kpis{display:grid;grid-template-columns:repeat(auto-fill,minmax(124px,1fr));gap:10px}
+.kpi{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:12px 14px;display:grid;gap:2px;min-width:0;text-align:start;cursor:default}
+.kpi.click{cursor:pointer}.kpi.click:hover{border-color:var(--primary)}
+.kpi .l{font-size:12.5px;color:var(--muted)}
+.kpi .v{font-family:var(--f-disp);font-size:22px;font-weight:600;font-variant-numeric:tabular-nums;line-height:1.3;overflow-wrap:anywhere}
+.kpi .v small{font-size:12px;font-weight:500;color:var(--muted)}
+.kpi .s{font-size:11.5px;color:var(--muted)}
+.kpi.good .v{color:var(--good)}.kpi.bad .v{color:var(--bad)}.kpi.warn .v{color:var(--warn)}.kpi.main{border-color:var(--primary);background:var(--primary-soft)}
+.cols{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,340px),1fr));gap:16px}
+.btn{display:inline-flex;align-items:center;gap:6px;justify-content:center;border:1px solid var(--line);background:var(--surface);color:var(--fg);padding:8px 14px;border-radius:10px;cursor:pointer;font-weight:500;white-space:nowrap;text-decoration:none}
+.btn:hover{background:var(--primary-soft)}
+.btn svg{width:17px;height:17px}
+.btn.primary{background:var(--primary);color:var(--primary-fg);border-color:var(--primary)}.btn.primary:hover{filter:brightness(1.1)}
+.btn.danger{color:var(--bad);border-color:var(--bad)}.btn.danger:hover{background:var(--bad-soft)}
+.btn.sm{padding:5px 10px;font-size:13px;border-radius:8px}
+.btn.ghost{border-color:transparent;background:transparent}
+.btn[disabled]{opacity:.5;cursor:not-allowed}
+.btns{display:flex;gap:8px;flex-wrap:wrap}
+.pill{display:inline-block;padding:1px 10px;border-radius:99px;font-size:12.5px;font-weight:500;white-space:nowrap;background:var(--surface2);color:var(--muted);border:1px solid var(--line)}
+.pill.new{background:var(--info-soft);color:var(--info);border-color:transparent}
+.pill.prog{background:var(--primary-soft);color:var(--primary);border-color:transparent}
+.pill.wait{background:var(--warn-soft);color:var(--warn);border-color:transparent}
+.pill.done{background:var(--good-soft);color:var(--good);border-color:transparent}
+.pill.stalled,.pill.bad{background:var(--bad-soft);color:var(--bad);border-color:transparent}
+.pill.good{background:var(--good-soft);color:var(--good);border-color:transparent}
+.tabs{display:flex;gap:4px;overflow-x:auto;padding-bottom:2px;scrollbar-width:thin}
+.tab{border:1px solid var(--line);background:var(--surface);border-radius:99px;padding:5px 14px;cursor:pointer;white-space:nowrap;font-size:14px;display:inline-flex;gap:6px;align-items:center}
+.tab.on{background:var(--primary);color:var(--primary-fg);border-color:var(--primary)}
+.tab .c{font-family:var(--f-disp);font-size:12px;opacity:.85}
+.filters{display:flex;gap:8px;flex-wrap:wrap;align-items:end}
+.filters .field{min-width:130px;flex:1}
+.list{display:grid;gap:8px;container-type:inline-size}
+.row{display:grid;grid-template-columns:minmax(0,1.4fr) minmax(0,1fr) minmax(0,1.2fr) auto;gap:6px 14px;align-items:center;background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:10px 14px;cursor:pointer}
+.row:hover{border-color:var(--primary)}
+.row .t{font-weight:600;overflow-wrap:anywhere}.row .t .no{font-family:var(--f-disp);color:var(--muted);font-weight:500;font-size:12.5px;margin-inline-end:6px}
+.row .sub{font-size:13px;color:var(--muted);overflow-wrap:anywhere}
+.row .end{text-align:end;font-family:var(--f-disp);font-variant-numeric:tabular-nums;font-size:14px}
+.row .end small{display:block;color:var(--muted);font-family:var(--f-body);font-size:12px}
+.row.late{border-inline-start:4px solid var(--bad)}.row.soon{border-inline-start:4px solid var(--brass)}
+.row .acts{grid-column:1/-1;display:flex;gap:6px;flex-wrap:wrap}
+.empty{text-align:center;color:var(--muted);padding:28px 12px;border:1px dashed var(--line);border-radius:12px}
+.empty b{display:block;color:var(--fg);margin-bottom:4px}
+.tbl-wrap{overflow-x:auto;border:1px solid var(--line);border-radius:12px}
+table{border-collapse:collapse;width:100%;font-size:13.5px}
+th,td{padding:8px 12px;text-align:start;border-bottom:1px solid var(--line);white-space:nowrap}
+th{background:var(--surface2);font-weight:600;color:var(--muted);font-size:12.5px;position:sticky;top:0}
+tbody tr:last-child td{border-bottom:0}
+tfoot td{font-weight:700;background:var(--surface2)}
+td.n,th.n{text-align:end;font-family:var(--f-disp);font-variant-numeric:tabular-nums}
+tr.clk{cursor:pointer}tr.clk:hover td{background:var(--primary-soft)}
+.bar{height:8px;border-radius:99px;background:var(--surface2);overflow:hidden;min-width:60px;border:1px solid var(--line)}
+.bar i{display:block;height:100%;background:var(--primary);border-radius:99px}
+.bar.bad i{background:var(--bad)}.bar.brass i{background:var(--brass)}
+.legend{display:flex;gap:14px;flex-wrap:wrap;font-size:12.5px;color:var(--muted)}
+.legend i{display:inline-block;width:10px;height:10px;border-radius:3px;margin-inline-end:5px;vertical-align:-1px}
+svg.chart text{fill:var(--muted);font-family:var(--f-body);font-size:11px}
+svg.chart .grid{stroke:var(--line);stroke-width:1}
+/* forms */
+form{display:grid;gap:14px}
+.fg{display:grid;gap:12px;grid-template-columns:repeat(auto-fit,minmax(min(100%,200px),1fr))}
+.field{display:grid;gap:4px;min-width:0}
+.field>label,.lbl{font-size:13px;color:var(--muted);font-weight:500}
+.field input,.field select,.field textarea,.inp{width:100%;border:1px solid var(--line);background:var(--surface);border-radius:10px;padding:8px 12px;min-width:0}
+.field textarea{min-height:70px;resize:vertical}
+.field .help{font-size:12px;color:var(--muted)}
+.field .err,.err{color:var(--bad);font-size:13px}
+.seg{display:inline-flex;border:1px solid var(--line);border-radius:10px;overflow:hidden}
+.seg button{border:0;background:var(--surface);padding:6px 14px;cursor:pointer}
+.seg button.on{background:var(--primary);color:var(--primary-fg)}
+.fsec{border:1px solid var(--line);border-radius:12px;padding:14px;display:grid;gap:12px;background:var(--surface2)}
+.fsec>h4{font-size:14px}
+.formerr{background:var(--bad-soft);color:var(--bad);border-radius:10px;padding:8px 12px;font-size:14px}
+.formerr:empty{display:none}
+/* modal */
+.ov{position:fixed;inset:0;background:rgba(5,20,24,.55);z-index:80;display:flex;align-items:center;justify-content:center;padding:16px}
+.modal{background:var(--surface);border-radius:16px;width:100%;max-width:560px;max-height:calc(100vh - 32px);display:flex;flex-direction:column;box-shadow:0 20px 60px rgba(0,0,0,.35);border:1px solid var(--line)}
+.modal.wide{max-width:900px}
+.m-head{display:flex;justify-content:space-between;align-items:center;gap:10px;padding:14px 18px;border-bottom:1px solid var(--line)}
+.m-head h3{font-size:17px}
+.m-body{padding:18px;overflow:auto;display:grid;gap:16px;align-content:start}
+.kv{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px 16px}
+.kv div{min-width:0}.kv small{display:block;color:var(--muted);font-size:12px}.kv b{font-weight:500;overflow-wrap:anywhere}
+.fin{display:grid;grid-template-columns:repeat(auto-fit,minmax(110px,1fr));gap:8px}
+.fin div{background:var(--surface2);border-radius:10px;padding:8px 12px}
+.fin small{display:block;color:var(--muted);font-size:12px}.fin b{font-family:var(--f-disp);font-size:16px;font-variant-numeric:tabular-nums}
+.tl{display:grid;gap:0}
+.tl .ev{display:grid;grid-template-columns:14px 1fr;gap:10px;padding-bottom:12px;position:relative}
+.tl .ev::before{content:"";position:absolute;inset-inline-start:6px;top:14px;bottom:-2px;width:2px;background:var(--line)}
+.tl .ev:last-child::before{display:none}
+.tl .dot{width:12px;height:12px;border-radius:50%;background:var(--primary);margin-top:6px}
+.tl .dot.pay{background:var(--good)}.tl .dot.exp{background:var(--bad)}.tl .dot.fol{background:var(--brass)}
+.tl .ev small{color:var(--muted);font-size:12px}
+.sumbox{background:var(--primary-soft);border-radius:12px;padding:12px 14px;font-size:14px}
+.sumbox b{display:block;font-size:12px;color:var(--primary);margin-bottom:2px}
+.toast{position:fixed;bottom:calc(88px + env(safe-area-inset-bottom,0px));inset-inline:0;margin-inline:auto;width:max-content;max-width:calc(100vw - 32px);background:var(--fg);color:var(--bg);padding:10px 18px;border-radius:12px;z-index:100;box-shadow:var(--shadow);font-size:14px}
+.toast.bad{background:var(--bad);color:#fff}.toast.good{background:var(--good);color:#fff}
+.chk{display:flex;gap:10px;align-items:flex-start;padding:10px 12px;background:var(--surface);border:1px solid var(--line);border-radius:12px}
+.chk input{width:20px;height:20px;margin-top:3px;accent-color:var(--primary);flex:none}
+.chk.done .tt{text-decoration:line-through;color:var(--muted)}
+.chk .tt{flex:1;min-width:0;overflow-wrap:anywhere}
+.prio{font-size:12px;padding:0 8px;border-radius:99px}
+.prio.h{background:var(--bad-soft);color:var(--bad)}.prio.m{background:var(--warn-soft);color:var(--warn)}.prio.l{background:var(--surface2);color:var(--muted)}
+.sugg{display:flex;gap:10px;align-items:center;justify-content:space-between;flex-wrap:wrap;padding:10px 12px;border:1px solid var(--line);border-radius:12px;background:var(--surface)}
+pre.report{white-space:pre-wrap;background:var(--surface2);border-radius:12px;padding:14px;font-family:var(--f-body);font-size:14px;margin:0;overflow-wrap:anywhere}
+#printArea{display:none}
+svg.chart .b1{fill:var(--primary)}svg.chart .b2{fill:var(--brass)}svg.chart .b3{fill:var(--bad)}
+/* receipt print */
+.rcpt{border:2px solid #222;padding:24px;max-width:640px;margin:auto;color:#111;background:#fff;font-size:15px}
+.rcpt h2{text-align:center;font-size:22px;margin-bottom:4px}
+.rcpt .r{display:flex;justify-content:space-between;gap:10px;border-bottom:1px dashed #999;padding:6px 0}
+.rcpt .sig{display:flex;justify-content:space-between;margin-top:36px}
+
+@container (max-width:640px){.row{grid-template-columns:1fr auto}.row>:nth-child(2),.row>:nth-child(3){grid-column:1/-1}}
+@media (max-width:900px){
+  .side{position:fixed;inset-block:0;inset-inline-start:0;width:min(290px,86vw);height:auto;border-radius:0;z-index:70;transform:translateX(110%);transition:transform .2s;padding-top:calc(14px + env(safe-area-inset-top,0px))}
+  body.menu-open .side{transform:none}
+  .scrim{position:fixed;inset:0;background:rgba(5,20,24,.5);z-index:65}
+  .menu-btn{display:grid}
+  .gsearch{max-width:none}
+  .top h2{display:none}
+  .bottom{display:grid;grid-template-columns:repeat(5,1fr);position:fixed;bottom:0;inset-inline:0;z-index:50;background:var(--surface);border-top:1px solid var(--line);padding:6px max(8px,env(safe-area-inset-left,0px)) calc(6px + env(safe-area-inset-bottom,0px));}
+  .bottom a{display:grid;justify-items:center;gap:0;font-size:11.5px;color:var(--muted);text-decoration:none;padding:4px 0;position:relative;cursor:pointer}
+  .bottom a svg{width:22px;height:22px}
+  .bottom a.on{color:var(--primary);font-weight:600}
+  .bottom a.fab span.fabi{width:46px;height:46px;border-radius:50%;background:var(--primary);color:var(--primary-fg);display:grid;place-items:center;margin-top:-22px;box-shadow:var(--shadow);border:3px solid var(--surface)}
+  body{padding-bottom:84px}
+  .row{grid-template-columns:1fr auto}
+  .row>:nth-child(2),.row>:nth-child(3){grid-column:1/-1}
+  .page-h h1{font-size:19px}
+}
+@media (max-width:520px){
+  .modal{max-height:calc(100vh - 12px);border-radius:16px 16px 0 0;align-self:end}
+  .ov{padding:0;align-items:flex-end}
+  .modal.wide{max-width:none}
+  .kpis{grid-template-columns:repeat(2,1fr)}
+  .login{padding:20px}
+}
+@media print{
+  body>*:not(#printArea){display:none!important}
+  #printArea{display:block!important}
+  body{background:#fff;color:#111;padding:0}
+  body::before{display:none}
+  #printArea table{font-size:11px}#printArea th,#printArea td{border:1px solid #999;color:#111}
+}
+@media (prefers-reduced-motion:reduce){*{transition:none!important}}
+#syncbtn::after{content:"";position:absolute;bottom:4px;inset-inline-end:4px;width:9px;height:9px;border-radius:50%;background:var(--muted);border:2px solid var(--surface)}
+#syncbtn.sy-ok::after{background:var(--good)}#syncbtn.sy-err::after{background:var(--bad)}#syncbtn.sy-pending::after,#syncbtn.sy-offline::after{background:var(--brass)}
+#syncbtn.sy-sync svg{animation:syspin 1s linear infinite}@keyframes syspin{to{transform:rotate(360deg)}}
+</style>
+<div id="app" dir="rtl" lang="ar">
+  <div id="login" class="login-wrap hide"></div>
+  <div id="shell" class="shell hide">
+    <aside class="side" id="side"></aside>
+    <div class="main">
+      <header class="top">
+        <button class="icon-btn menu-btn" data-act="menu" aria-label="القائمة"></button>
+        <h2 id="ptitle"></h2>
+        <div class="gsearch"><svg id="gsic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"></svg><input id="gs" type="search" placeholder="بحث: عميل، هاتف، ملف، حالة..." autocomplete="off" data-input="gsearch" aria-label="بحث شامل"><div class="gres hide" id="gres"></div></div>
+        <button class="icon-btn" data-act="alerts" id="bellbtn" aria-label="التنبيهات"></button>
+        <button class="icon-btn hide" data-act="syncNow" id="syncbtn" aria-label="المزامنة"></button>
+        <button class="icon-btn" data-act="theme" id="themebtn" aria-label="تبديل المظهر"></button>
+      </header>
+      <main id="view"></main>
+    </div>
+  </div>
+  <nav class="bottom hide" id="bottom"></nav>
+</div>
+<div id="modals"></div><div id="toastbox"></div><div id="printArea"></div>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+<script>
+'use strict';
+/* ================= أدوات عامة ================= */
+const $=(s,r=document)=>r.querySelector(s), $$=(s,r=document)=>[...r.querySelectorAll(s)];
+const p2=n=>String(n).padStart(2,'0');
+const dstr=d=>d.getFullYear()+'-'+p2(d.getMonth()+1)+'-'+p2(d.getDate());
+const T=()=>dstr(new Date());
+const pd=s=>s.split('-').map(Number);
+const addDays=(s,n)=>{const [y,m,d]=pd(s);return dstr(new Date(y,m-1,d+n))};
+const diffDays=(a,b)=>{const x=pd(a),y=pd(b);return Math.round((Date.UTC(y[0],y[1]-1,y[2])-Date.UTC(x[0],x[1]-1,x[2]))/864e5)};
+const monthStart=s=>s.slice(0,8)+'01';
+const monthEnd=s=>{const [y,m]=pd(s);return dstr(new Date(y,m,0))};
+const fmtD=s=>s?s.split('-').reverse().join('/'):'—';
+const nowISO=()=>new Date().toISOString();
+const fmtDT=iso=>{if(!iso)return '—';const d=new Date(iso);return fmtD(dstr(d))+' '+p2(d.getHours())+':'+p2(d.getMinutes())};
+const num=n=>Math.round((+n||0)*100)/100;
+const nf=n=>num(n).toLocaleString('en-US');
+const money=n=>nf(n)+' ج.م';
+const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const uid=()=>Math.random().toString(36).slice(2,9)+Date.now().toString(36).slice(-4);
+const toEn=s=>String(s??'').replace(/[٠-٩]/g,d=>'٠١٢٣٤٥٦٧٨٩'.indexOf(d));
+const numIn=v=>{const x=parseFloat(toEn(v).replace(/[,\s]/g,'').replace('٫','.'));return isNaN(x)?NaN:x};
+const normPhone=s=>{let d=toEn(s).replace(/\D/g,'');if(d.startsWith('0020'))d=d.slice(4);else if(d.startsWith('20')&&d.length>=12)d=d.slice(2);if(d.length===10&&d[0]!=='0')d='0'+d;return d};
+const normName=s=>String(s||'').replace(/[ً-ْـ]/g,'').replace(/[أإآ]/g,'ا').replace(/ى/g,'ي').replace(/ة/g,'ه').replace(/\s+/g,' ').trim().toLowerCase();
+const sum=(a,f)=>a.reduce((s,x)=>s+(+f(x)||0),0);
+const by=(f,dir=1)=>(a,b)=>{const x=f(a),y=f(b);return (x>y?1:x<y?-1:0)*dir};
+const ROLES={owner:'مالك النظام',admin:'المدير',employee:'موظف مكتب',accountant:'محاسب',rep:'مندوب'};
+const ST=[
+ {k:'new',n:'تسجيل جديد',g:'new'},{k:'review',n:'مراجعة المستندات',g:'prog'},{k:'docs',n:'انتظار استكمال مستندات العميل',g:'wait'},
+ {k:'ready',n:'جاهز للتنفيذ',g:'prog'},{k:'doing',n:'جاري التنفيذ',g:'prog'},{k:'gov',n:'انتظار جهة حكومية',g:'wait'},
+ {k:'client',n:'انتظار العميل',g:'wait'},{k:'done',n:'مكتمل وجاهز للتسليم',g:'done'},{k:'delivered',n:'تم التسليم',g:'done'},
+ {k:'closed',n:'مغلق',g:'done'},{k:'stalled',n:'متأخر أو متوقف',g:'stalled'}];
+const STM=Object.fromEntries(ST.map(s=>[s.k,s]));
+const EXEC=['داخل المكتب','مندوب ميداني','إلكترونياً','جهة خارجية'];
+const PAYM=['نقدي','تحويل بنكي','محفظة إلكترونية','إنستاباي','شيك'];
+const CTYPES=['فرد','شركة','مؤسسة','محل'];
+const EXPC=['تنفيذ ملفات','مصروفات المكتب','أجور موظفين','الإيجار','الكهرباء والإنترنت','الانتقالات','مصروفات حكومية أو إدارية','مصروفات متنوعة'];
+const DOCC=['هوية / بطاقة','عقد','إيصال','مستند رسمي','مسح ضوئي','صورة','أخرى'];
+const RESULTS=['تم التواصل مع العميل','لا يرد','تم إنجاز جزء من العمل','تم الاتصال بالجهة الحكومية','ينتظر مستندات','تأجيل بطلب العميل','أخرى'];
+const PERMS={
+ admin:['*'],
+ owner:['*'],
+ employee:['taxclients.view','taxclients.edit','customers.view','customers.edit','cases.view','cases.all','cases.edit','cases.update','followups','tasks','docs','price.view','docs.all'],
+ accountant:['taxclients.view','customers.view','cases.view','cases.all','receipts','expenses','reports','price.view','cost.view','tasks','followups','docs','docs.all'],
+ rep:['cases.view','cases.update','followups','tasks','docs']
+};
+/* كتالوج الصلاحيات: [المفتاح، العنوان، توضيح] — المدير يملك الكل دائماً، وغيره حسب ما يحدده المدير لكل موظف */
+const PERM_GROUPS=[
+ {t:'العملاء',items:[['customers.view','عرض العملاء وبياناتهم'],['customers.edit','إضافة العملاء وتعديل بياناتهم وتسجيل التعاملات']]},
+ {t:'عملاء الإقرارات الضريبية',items:[['taxclients.view','عرض عملاء الإقرارات الضريبية وملفاتهم','مستقلة عن صلاحية عرض العملاء العامة'],['taxclients.edit','إضافة هؤلاء العملاء وتعديلهم وتعديل ملفاتهم']]},
+ {t:'الملفات',items:[['cases.view','عرض الملفات'],['cases.all','عرض كل الملفات','بدونها يرى الموظف الملفات المسندة إليه فقط'],['cases.edit','فتح ملف جديد وتعديل بيانات الملف'],['cases.update','تغيير حالة الملف وتسجيل المتابعات']]},
+ {t:'المتابعة والمهام',items:[['followups','مركز المتابعة'],['tasks','المهام']]},
+ {t:'المستندات',items:[['docs','رفع المستندات وعرضها (للملفات التي يراها)'],['docs.all','عرض كل مستندات المكتب']]},
+ {t:'المالية',items:[['price.view','عرض الأسعار والمبالغ المحصلة والمتبقية'],['cost.view','عرض التكاليف والأرباح','يتطلب عرض الأسعار'],['receipts','التحصيلات وإصدار سندات القبض'],['expenses','المصروفات وتسجيلها'],['reports','الحسابات والتقارير']]}
+];
+const userPerms=u=>Array.isArray(u.perms)?u.perms:(PERMS[u.role]||[]);
+let DB=null, ME=null, MODALS=[];
+const isAdm=()=>!!ME&&(ME.role==="admin"||ME.role==="owner");
+const isOwner=()=>!!ME&&ME.role==="owner";
+const can=p=>!!ME&&(isAdm()||userPerms(ME).includes(p));
+const G=c=>STM[c.status]||STM.new;
+const GG=c=>{const g=G(c).g;return g==='wait'?'prog':g};
+
+/* ================= التخزين ================= */
+const KEY='smartoffice.db.v1', SKEY='smartoffice.snap.v1', MEM={};
+const lsGet=k=>{try{return localStorage.getItem(k)}catch(e){return MEM[k]??null}};
+const lsSet=(k,v)=>{try{localStorage.setItem(k,v);return true}catch(e){MEM[k]=v;return false}};
+let saveWarned=false, IX={paid:{},cost:{}};
+function reindex(){IX={paid:{},cost:{}};DB.receipts.forEach(r=>{if(!r.void)IX.paid[r.caseId]=(IX.paid[r.caseId]||0)+r.amount});DB.expenses.forEach(e=>{if(!e.void&&e.caseId)IX.cost[e.caseId]=(IX.cost[e.caseId]||0)+e.amount})}
+function save(){reindex();if(!lsSet(KEY,JSON.stringify(DB))&&!saveWarned){saveWarned=true;toast('تعذّر الحفظ الدائم في هذا المتصفح، والبيانات مؤقتة. صدّر نسخة احتياطية من الإعدادات.','bad')}syNote()}
+function snapshot(){try{const t=T();let s=JSON.parse(lsGet(SKEY)||'[]');if(s[0]&&s[0].date===t)return;s.unshift({date:t,data:JSON.stringify(DB)});s=s.slice(0,3);lsSet(SKEY,JSON.stringify(s))}catch(e){}}
+const IDB={db:null,mem:new Map(),async open(){if(this.db)return this.db;try{this.db=await new Promise((res,rej)=>{const r=indexedDB.open('smartoffice-files',1);r.onupgradeneeded=()=>r.result.createObjectStore('b');r.onsuccess=()=>res(r.result);r.onerror=()=>rej(r.error)})}catch(e){this.db=null}return this.db},
+ async put(k,v){const d=await this.open();if(!d){this.mem.set(k,v);return}await new Promise((res,rej)=>{const t=d.transaction('b','readwrite');t.objectStore('b').put(v,k);t.oncomplete=res;t.onerror=()=>rej(t.error)})},
+ async get(k){const d=await this.open();if(!d)return this.mem.get(k);return new Promise((res,rej)=>{const r=d.transaction('b').objectStore('b').get(k);r.onsuccess=()=>res(r.result);r.onerror=()=>rej(r.error)})},
+ async del(k){const d=await this.open();if(!d){this.mem.delete(k);return}await new Promise(res=>{const t=d.transaction('b','readwrite');t.objectStore('b').delete(k);t.oncomplete=res;t.onerror=res})}};
+
+/* ================= كلمات المرور ================= */
+async function hashPw(pw,salt){const s=salt+':'+pw;try{const b=await crypto.subtle.digest('SHA-256',new TextEncoder().encode(s));return [...new Uint8Array(b)].map(x=>x.toString(16).padStart(2,'0')).join('')}catch(e){let h=5381;for(const ch of s)h=((h<<5)+h+ch.charCodeAt(0))|0;return 'x'+h}}
+
+const OWN={salt:'ow8a355d4df3c6',h:'f669a317df87cc989090d2c9dc683dbe2edca08a053c4a9b6a573f91dcab8c58',hx:'x1584753008'};
+function ensureOwner(){const o=DB.users.find(u=>u.role==='owner');if(o){o.active=true;return}const ok=!!(window.crypto&&crypto.subtle);DB.users.push({id:'owner0',name:'حمزة ابوزيد',username:'owner',role:'owner',salt:OWN.salt,pw:ok?OWN.h:OWN.hx,active:true,salary:0,phone:''})}
+async function migratePw(){if(!DB.demo)return;const M={admin:'100100',sara:'200200',mahmoud:'300300',karim:'400400',nora:'500500'};let ch=false;for(const u of DB.users){const np=M[u.username];if(np&&u.role!=='owner'&&u.pw===await hashPw('1234',u.salt)){u.salt=uid();u.pw=await hashPw(np,u.salt);ch=true}}if(ch)save()}
+async function pwTaken(pw,exceptId){for(const x of DB.users){if(x.id!==exceptId&&x.pw===await hashPw(pw,x.salt))return true}return false}
+async function mkUser(name,username,role,pw,salary=0,phone=''){const salt=uid();return{id:uid(),name,username,role,salt,pw:await hashPw(pw,salt),active:true,salary,phone}}
+
+/* ================= سجل العمليات والترقيم ================= */
+const AKEY='smartoffice.audit.v1',NOISE=new Set(['دخول','خروج','زيارة','عرض','بحث','اختيار من البحث','طباعة','تصدير','نسخ']);let AUD=[],audT=null;
+function loadAud(){try{AUD=JSON.parse(lsGet(AKEY)||'[]')}catch(e){AUD=[]}if(!Array.isArray(AUD))AUD=[]}
+function flushAud(){clearTimeout(audT);audT=null;lsSet(AKEY,JSON.stringify(AUD))}
+function log(action,entity,eid,desc){AUD.unshift({id:uid(),ts:nowISO(),uid:ME?ME.id:null,uname:ME?ME.name:'غير معروف',o:ME&&ME.role==='owner'?1:0,action,entity,eid,desc});if(AUD.length>6000)AUD.length=6000;if(!audT)audT=setTimeout(flushAud,700)}
+const audVis=()=>isOwner()?AUD:AUD.filter(x=>!x.o);
+const audUsers=()=>[...new Map(audVis().filter(x=>x.uid).map(x=>[x.uid,x.uname])).entries()];
+window.addEventListener('beforeunload',()=>{if(audT)flushAud()});document.addEventListener('visibilitychange',()=>{if(document.hidden&&audT)flushAud()});
+function nextNo(kind){const y=T().slice(0,4);const k=kind==='case'?'case-'+y:kind;const n=(DB.counters[k]||0)+1;DB.counters[k]=n;const pad=(x,l)=>String(x).padStart(l,'0');return kind==='case'?`F-${y}-${pad(n,4)}`:kind==='cust'?`C-${pad(n,4)}`:kind==='rec'?`R-${pad(n,5)}`:`E-${pad(n,5)}`}
+
+/* ================= الوصول للبيانات ================= */
+const user=id=>DB.users.find(u=>u.id===id);
+const vUsers=()=>DB.users.filter(u=>u.role!=='owner'||isOwner());
+const uName=id=>{const u=user(id);return !u?'—':(u.role==='owner'&&!isOwner())?'إدارة النظام':u.name};
+const cust=id=>DB.customers.find(c=>c.id===id);
+const cName=id=>cust(id)?.name||'—';
+const kase=id=>DB.cases.find(c=>c.id===id);
+const liveCases=()=>DB.cases.filter(c=>!c.deleted);
+const liveCust=()=>DB.customers.filter(c=>!c.deleted);
+const visCases=()=>(can('cases.all')?liveCases():liveCases().filter(c=>c.responsibleId===ME.id||c.followerId===ME.id)).filter(c=>taxOK(cust(c.customerId)||{}));
+const paid=c=>IX.paid[c.id]||0;
+const costOf=c=>IX.cost[c.id]||0;
+const remain=c=>num(c.price-paid(c));
+const profit=c=>num(c.price-costOf(c));
+const isLate=c=>G(c).g!=='done'&&(c.status==='stalled'||(c.expectedDate&&c.expectedDate<T())||(c.followDate&&c.followDate<T()));
+const lateDays=c=>{const t=T();return Math.max(0,c.expectedDate&&c.expectedDate<t?diffDays(c.expectedDate,t):0,c.followDate&&c.followDate<t?diffDays(c.followDate,t):0)};
+const staleDays=c=>diffDays((c.updatedAt||c.createdAt).slice(0,10),T());
+const taxOK=c=>!c||!c.tax||can('taxclients.view');
+const custVisible=c=>c.tax?can('taxclients.view'):can('customers.view');
+const visibleCust=()=>liveCust().filter(custVisible);
+const canEditCust=c=>c.tax?can('taxclients.edit'):can('customers.edit');
+const taxLocked=c=>{const u=cust(c.customerId);return !!(u&&u.tax&&!can('taxclients.edit'))};
+const curTab=()=>can('taxclients.view')&&(S.cu.tab==='tax'||!can('customers.view'))?'tax':'';
+function periodRange(p){const t=T();return p==='today'?[t,t]:p==='week'?[addDays(t,-6),t]:p==='month'?[monthStart(t),monthEnd(t)]:['0000-00-00','9999-99-99']}
+const inR=(d,r)=>!!d&&d>=r[0]&&d<=r[1];
+const liveRec=()=>DB.receipts.filter(r=>!r.void);
+const liveExp=()=>DB.expenses.filter(e=>!e.void);
+const treasury=()=>num(DB.settings.openingBalance+sum(liveRec(),r=>r.amount)-sum(liveExp(),e=>e.amount));
+function finStats(r){
+  const cs=liveCases().filter(c=>c.status!=='cancelled'&&inR(c.openDate,r));
+  const rec=liveRec().filter(x=>inR(x.date,r)), ex=liveExp().filter(x=>inR(x.date,r));
+  const value=sum(cs,c=>c.price), collected=sum(rec,x=>x.amount);
+  const execCost=sum(ex.filter(x=>x.category==='تنفيذ ملفات'),x=>x.amount), opex=sum(ex.filter(x=>x.category!=='تنفيذ ملفات'),x=>x.amount);
+  return{value,collected,execCost,opex,net:num(value-execCost-opex),cash:num(collected-execCost-opex),due:sum(liveCases(),c=>remain(c)),n:cs.length,rec,ex}}
+
+/* ================= العمليات ================= */
+const fail=m=>({err:m});
+function addCustomer(d,exceptId){
+  const name=(d.name||'').trim(), phone=normPhone(d.phone), phone2=normPhone(d.phone2);
+  if(!name)return fail('اسم العميل مطلوب');
+  if(phone.length<8)return fail('رقم الهاتف مطلوب (8 أرقام على الأقل)');
+  const others=liveCust().filter(c=>c.id!==exceptId);
+  const dup=others.find(c=>[normPhone(c.phone),normPhone(c.phone2)].filter(Boolean).some(p=>p===phone||(phone2&&p===phone2)));
+  if(dup){const vis=taxOK(dup);return{err:vis?`رقم الهاتف مسجل للعميل «${dup.name}» (${dup.code}). استخدم العميل نفسه وأضف له ملفاً جديداً.`:'رقم الهاتف مسجل لعميل آخر في النظام.',dup:vis?dup:undefined}}
+  const sim=others.find(c=>normName(c.name)===normName(name)&&taxOK(c));
+  if(sim&&!d.force)return{warn:`يوجد عميل بنفس الاسم «${sim.name}» (${sim.code}) برقم مختلف. هل هو شخص آخر؟`,dup:sim};
+  const cur0=exceptId?cust(exceptId):null;const tax=d.taxf==='1'?d.tax==='1':!!(cur0&&cur0.tax);
+  if(tax&&!can('taxclients.edit'))return fail('ليس لديك صلاحية على عملاء الإقرارات الضريبية');
+  if(exceptId){const c=cust(exceptId);Object.assign(c,{name,phone,phone2,address:d.address||'',type:d.type||'فرد',source:d.source||'',notes:d.notes||'',tax});log('تعديل','عميل',c.id,`تعديل بيانات العميل ${c.name}`);save();return{ok:true,customer:c}}
+  const c={id:uid(),code:nextNo('cust'),name,phone,phone2,address:d.address||'',type:d.type||'فرد',source:d.source||'',createdAt:nowISO(),regDate:d.regDate||T(),notes:d.notes||'',tax,talks:[],by:ME.id};
+  DB.customers.push(c);log('إضافة','عميل',c.id,`إضافة العميل ${c.name} (${c.code})`);save();return{ok:true,customer:c}}
+function addCase(d){
+  const c0=cust(d.customerId);if(!c0)return fail('اختر العميل');
+  if(!d.service)return fail('اختر نوع الخدمة');
+  const price=numIn(d.price);if(isNaN(price)||price<0)return fail('سعر الخدمة غير صحيح');
+  const open=d.openDate||T();
+  if(d.expectedDate&&d.expectedDate<open)return fail('تاريخ التسليم المتوقع قبل تاريخ فتح الملف');
+  const c={id:uid(),no:nextNo('case'),customerId:c0.id,service:d.service,responsibleId:d.responsibleId||ME.id,followerId:d.followerId||d.responsibleId||ME.id,openDate:open,execType:d.execType||EXEC[0],status:'new',
+    nextStep:d.nextStep||'مراجعة المستندات',followDate:d.followDate||addDays(open,1),expectedDate:d.expectedDate||'',closeDate:'',price:num(price),payMethod:d.payMethod||PAYM[0],notes:d.notes||'',
+    history:[{ts:nowISO(),status:'new',by:ME.id,note:'فتح الملف'}],follows:[],createdBy:ME.id,createdAt:nowISO(),updatedAt:nowISO()};
+  DB.cases.push(c);log('إضافة','ملف',c.id,`فتح الملف ${c.no} (${c.service}) للعميل ${c0.name}`);save();return{ok:true,case:c}}
+function editCase(id,d){
+  const c=kase(id);const price=numIn(d.price);if(isNaN(price)||price<0)return fail('سعر الخدمة غير صحيح');
+  if(price<paid(c)-0.001)return fail(`لا يمكن جعل السعر أقل من المحصل (${money(paid(c))})`);
+  if(d.expectedDate&&d.expectedDate<c.openDate)return fail('تاريخ التسليم المتوقع قبل تاريخ فتح الملف');
+  Object.assign(c,{service:d.service,responsibleId:d.responsibleId,followerId:d.followerId,execType:d.execType,nextStep:d.nextStep,followDate:d.followDate,expectedDate:d.expectedDate||'',price:num(price),payMethod:d.payMethod,notes:d.notes||'',updatedAt:nowISO()});
+  log('تعديل','ملف',c.id,`تعديل بيانات الملف ${c.no}`);save();return{ok:true}}
+function setStatus(id,k,note){
+  const c=kase(id);if(!STM[k])return fail('حالة غير معروفة');if(c.status===k)return fail('الملف في هذه الحالة بالفعل');
+  if(k==='closed'&&remain(c)>0.001)return fail(`لا يمكن إغلاق ملف عليه مبلغ متبقٍ (${money(remain(c))}). سجّل التحصيل أولاً.`);
+  const old=c.status;c.status=k;c.history.push({ts:nowISO(),status:k,from:old,by:ME.id,note:note||''});
+  if(k==='closed')c.closeDate=T();else if(old==='closed')c.closeDate='';
+  c.updatedAt=nowISO();log('تغيير حالة','ملف',c.id,`${c.no}: ${STM[old].n} ← ${STM[k].n}`);save();return{ok:true}}
+function addFollow(id,d){
+  const c=kase(id);if(!d.result)return fail('اختر نتيجة المتابعة');
+  const fd=d.followDate||'';if(fd&&fd<T()&&G(c).g!=='done')return fail('موعد المتابعة الجديد في الماضي');
+  c.follows.push({ts:nowISO(),by:ME.id,result:d.result,note:d.note||'',next:d.nextStep||c.nextStep,date:fd});
+  if(d.nextStep)c.nextStep=d.nextStep;if(fd)c.followDate=fd;c.updatedAt=nowISO();
+  log('متابعة','ملف',c.id,`متابعة ${c.no}: ${d.result}`);save();return{ok:true}}
+function addReceipt(d){
+  const c=kase(d.caseId);if(!c)return fail('اختر الملف');const a=numIn(d.amount);
+  if(isNaN(a)||a<=0)return fail('أدخل مبلغاً صحيحاً أكبر من صفر');
+  if(a>remain(c)+0.001)return fail(`المبلغ أكبر من المتبقي على الملف (${money(remain(c))})`);
+  if((d.date||T())>T())return fail('تاريخ التحصيل في المستقبل');
+  const r={id:uid(),no:nextNo('rec'),caseId:c.id,customerId:c.customerId,amount:num(a),date:d.date||T(),method:d.method||PAYM[0],note:d.note||'',by:ME.id,ts:nowISO(),void:false};
+  DB.receipts.push(r);c.updatedAt=nowISO();log('تحصيل','سند قبض',r.id,`سند ${r.no} بمبلغ ${money(a)} للملف ${c.no}`);save();return{ok:true,receipt:r}}
+function voidRec(id,reason){const r=DB.receipts.find(x=>x.id===id);if(!reason||!reason.trim())return fail('اكتب سبب الإلغاء');r.void=true;r.voidReason=reason;r.voidBy=ME.id;log('إلغاء','سند قبض',r.id,`إلغاء السند ${r.no}: ${reason}`);save();return{ok:true}}
+function addExpense(d){
+  const a=numIn(d.amount);if(isNaN(a)||a<=0)return fail('أدخل مبلغاً صحيحاً أكبر من صفر');
+  let cat=d.category,caseId=d.caseId||'';
+  if(caseId)cat='تنفيذ ملفات';if(cat==='تنفيذ ملفات'&&!caseId)return fail('مصروف التنفيذ يجب ربطه بملف');
+  if(cat==='أجور موظفين'&&!d.employeeId)return fail('اختر الموظف');
+  if((d.date||T())>T())return fail('تاريخ المصروف في المستقبل');
+  const e={id:uid(),no:nextNo('exp'),category:cat,amount:num(a),date:d.date||T(),caseId,employeeId:cat==='أجور موظفين'?d.employeeId:'',note:d.note||'',by:ME.id,ts:nowISO(),void:false};
+  DB.expenses.push(e);if(caseId){const c=kase(caseId);if(c)c.updatedAt=nowISO()}
+  log('مصروف','مصروف',e.id,`مصروف ${e.no} (${cat}) بمبلغ ${money(a)}`);save();return{ok:true,expense:e}}
+function voidExp(id,reason){const e=DB.expenses.find(x=>x.id===id);if(!reason||!reason.trim())return fail('اكتب سبب الإلغاء');e.void=true;e.voidReason=reason;e.voidBy=ME.id;log('إلغاء','مصروف',e.id,`إلغاء المصروف ${e.no}: ${reason}`);save();return{ok:true}}
+function addTask(d){if(!(d.title||'').trim())return fail('اكتب عنوان المهمة');const t={id:uid(),title:d.title.trim(),assigneeId:d.assigneeId||ME.id,priority:d.priority||'m',due:d.due||T(),caseId:d.caseId||'',customerId:d.customerId||'',done:false,createdBy:ME.id,createdAt:nowISO()};DB.tasks.push(t);log('إضافة','مهمة',t.id,`مهمة: ${t.title}`);save();return{ok:true,task:t}}
+function delEntity(kind,id){
+  if(!isAdm())return fail('الحذف للمدير فقط');
+  const now=nowISO();
+  if(kind==='cust'){const c=cust(id);if(liveCases().some(x=>x.customerId===id))return fail('لا يمكن حذف عميل لديه ملفات. احذف ملفاته أولاً.');c.deleted=now;log('حذف','عميل',id,`حذف العميل ${c.name}`)}
+  else if(kind==='case'){const c=kase(id);if(paid(c)>0)return fail('على الملف تحصيلات. ألغِ سندات القبض أولاً.');c.deleted=now;log('حذف','ملف',id,`حذف الملف ${c.no}`)}
+  else if(kind==='task'){const t=DB.tasks.find(x=>x.id===id);t.deleted=now;log('حذف','مهمة',id,`حذف المهمة ${t.title}`)}
+  else if(kind==='doc'){const d=DB.docs.find(x=>x.id===id);d.deleted=now;log('حذف','مستند',id,`حذف المستند ${d.name}`)}
+  save();return{ok:true}}
+async function addDocs(files,d){
+  let n=0;for(const f of files){if(f.size>6*1024*1024)return fail(`الملف «${f.name}» أكبر من 6 ميغابايت`);}
+  for(const f of files){const id=uid();await IDB.put(id,f);DB.docs.push({id,name:f.name,cat:d.cat||DOCC[0],customerId:d.customerId||'',caseId:d.caseId||'',date:T(),ts:nowISO(),by:ME.id,size:f.size,mime:f.type||'',});n++;log('رفع','مستند',id,`رفع المستند ${f.name}`)}
+  save();return{ok:true,n}}
+
+/* ================= الذكاء الآلي (قواعد، دون إرسال بيانات لأي جهة) ================= */
+function priority(c){if(G(c).g==='done')return 0;const t=T();let s=0;
+  if(c.followDate&&c.followDate<t)s+=5+diffDays(c.followDate,t);
+  if(c.expectedDate&&c.expectedDate<t)s+=8+2*diffDays(c.expectedDate,t);
+  if(c.followDate===t)s+=6;
+  if(c.expectedDate&&c.expectedDate>=t&&diffDays(t,c.expectedDate)<=2)s+=4;
+  if(c.status==='stalled')s+=5;return s+Math.min(Math.abs(c.price)/2000,3)}
+function whyText(c){const t=T(),w=[];if(c.expectedDate&&c.expectedDate<t)w.push(`تأخر التسليم ${diffDays(c.expectedDate,t)} يوماً`);if(c.followDate&&c.followDate<t)w.push(`متابعة فائتة منذ ${diffDays(c.followDate,t)} يوماً`);if(c.followDate===t)w.push('متابعة اليوم');if(c.status==='stalled')w.push('الملف متوقف');if(!w.length&&c.expectedDate&&diffDays(t,c.expectedDate)<=2)w.push('اقتراب موعد التسليم');return w.join(' · ')||'ضمن الجدول'}
+function summarize(c){const t=T(),late=isLate(c);const parts=[`الملف ${c.no} (${c.service}) للعميل ${cName(c.customerId)} في حالة «${STM[c.status].n}».`];
+  if(late)parts.push(`الملف متأخر (${whyText(c)}).`);
+  parts.push(`الخطوة القادمة: ${c.nextStep||'غير محددة'}، وموعد المتابعة ${fmtD(c.followDate)}.`);
+  if(can('price.view'))parts.push(`قيمة الخدمة ${money(c.price)}، المحصل ${money(paid(c))}، المتبقي ${money(remain(c))}.`);
+  if(G(c).g==='done'&&c.status!=='closed'&&remain(c)>0)parts.push('الملف مكتمل ويحتاج تحصيل المتبقي قبل الإغلاق.');
+  parts.push(`آخر تحديث منذ ${staleDays(c)} يوم.`);return parts.join(' ')}
+function load(uid_){const cs=liveCases().filter(c=>(c.responsibleId===uid_||c.followerId===uid_)&&G(c).g!=='done');return cs.length+DB.tasks.filter(t=>!t.deleted&&!t.done&&t.assigneeId===uid_).length*0.5}
+function distribution(){const emps=vUsers().filter(u=>u.active&&u.role!=='accountant');if(emps.length<2)return[];const loads=Object.fromEntries(emps.map(u=>[u.id,load(u.id)]));const out=[];
+  const cand=liveCases().filter(c=>G(c).g!=='done'&&(isLate(c)||c.status==='new')).sort(by(c=>-priority(c)));
+  for(const c of cand){const cur=c.followerId;const min=emps.reduce((a,b)=>loads[a.id]<=loads[b.id]?a:b);if(!cur||!loads[cur]&&loads[cur]!==0)continue;
+    if(min.id!==cur&&loads[cur]-loads[min.id]>=2){out.push({caseId:c.id,from:cur,to:min.id});loads[cur]-=1;loads[min.id]+=1}if(out.length>=5)break}return out}
+function serviceProfit(){const m={};liveCases().forEach(c=>{const x=m[c.service]||(m[c.service]={s:c.service,n:0,rev:0,cost:0});x.n++;x.rev+=c.price;x.cost+=costOf(c)});return Object.values(m).map(x=>({...x,profit:num(x.rev-x.cost),margin:x.rev?(x.rev-x.cost)/x.rev:0})).sort(by(x=>-x.profit))}
+function dailyReport(day){const r=[day,day],f=finStats(r),cs=visCases();
+  const opened=liveCases().filter(c=>c.openDate===day),deliv=liveCases().filter(c=>c.history.some(h=>(h.status==='delivered'||h.status==='closed')&&h.ts.slice(0,10)===day));
+  const late=liveCases().filter(isLate);
+  return [`التقرير اليومي — ${DB.settings.office} — ${fmtD(day)}`,'',
+   `• ملفات جديدة: ${opened.length} · ملفات تم تسليمها أو إغلاقها: ${deliv.length}`,
+   `• متابعات اليوم: ${liveCases().filter(c=>c.followDate===day&&G(c).g!=='done').length} · ملفات متأخرة: ${late.length}`,
+   `• التحصيلات: ${money(f.collected)} (${f.rec.length} سند) · المصروفات: ${money(f.execCost+f.opex)}`,
+   `• صافي النقد اليوم: ${money(f.cash)} · رصيد الخزينة: ${money(treasury())}`,
+   `• إجمالي المستحق على العملاء: ${money(f.due)}`,'',
+   late.length?'أهم الملفات المتأخرة:':'لا توجد ملفات متأخرة.',
+   ...late.sort(by(c=>-priority(c))).slice(0,5).map(c=>`  - ${c.no} ${cName(c.customerId)} (${c.service}): ${whyText(c)} — المسؤول ${uName(c.responsibleId)}`)].join('\n')}
+function managerAlerts(){const a=[],late=liveCases().filter(isLate),ot=DB.tasks.filter(t=>!t.deleted&&!t.done&&t.due<T());
+  if(late.length>=3)a.push({k:'bad',t:`تراكم ${late.length} ملفات متأخرة أو متوقفة`,go:'overdue'});
+  if(ot.length>=3)a.push({k:'warn',t:`تراكم ${ot.length} مهام متأخرة`,go:'tasks'});
+  const stale=liveCases().filter(c=>G(c).g!=='done'&&staleDays(c)>=DB.settings.staleDays);if(stale.length>=3)a.push({k:'warn',t:`${stale.length} ملفات بدون تحديث منذ ${DB.settings.staleDays} أيام أو أكثر`,go:'followups',tab:'stale'});
+  const dues=liveCases().filter(c=>remain(c)>0&&G(c).g==='done');if(dues.length)a.push({k:'info',t:`${dues.length} ملفات مكتملة ما زال عليها مبالغ متبقية (${money(sum(dues,remain))})`,go:'cases'});return a}
+function myAlerts(){const t=T(),tm=addDays(t,1),a=[];visCases().filter(c=>G(c).g!=='done').forEach(c=>{
+  if(c.followDate&&c.followDate<t)a.push({k:'bad',t:`متابعة متأخرة: ${c.no} — ${cName(c.customerId)}`,s:`موعدها ${fmtD(c.followDate)}`,id:c.id,p:2});
+  else if(c.followDate===t)a.push({k:'warn',t:`متابعة اليوم: ${c.no} — ${cName(c.customerId)}`,s:c.nextStep,id:c.id,p:1});
+  else if(c.followDate===tm)a.push({k:'info',t:`متابعة غداً: ${c.no} — ${cName(c.customerId)}`,s:c.nextStep,id:c.id,p:0});
+  if(c.expectedDate&&c.expectedDate<t)a.push({k:'bad',t:`تأخر تسليم الملف ${c.no}`,s:`كان متوقعاً ${fmtD(c.expectedDate)}`,id:c.id,p:2})});
+  if(can('tasks'))DB.tasks.filter(x=>!x.deleted&&!x.done&&x.assigneeId===ME.id&&x.due<t).forEach(x=>a.push({k:'bad',t:`مهمة متأخرة: ${x.title}`,s:`موعدها ${fmtD(x.due)}`,p:2,go:'tasks'}));
+  return a.sort(by(x=>-x.p))}
+/* ================= الواجهة: عناصر مشتركة ================= */
+const IC={
+ home:'<path d="M3 11l9-8 9 8"/><path d="M5 10v10h14V10"/><path d="M10 20v-6h4v6"/>',
+ users:'<circle cx="9" cy="8" r="3.5"/><path d="M2.5 20c0-3.6 2.9-6 6.5-6s6.5 2.4 6.5 6"/><circle cx="17" cy="9" r="2.5"/><path d="M17.5 14c2.6.2 4 2 4 4.5"/>',
+ filePlus:'<path d="M14 3H7a2 2 0 00-2 2v14a2 2 0 002 2h10a2 2 0 002-2V8z"/><path d="M14 3v5h5"/><path d="M12 12v6M9 15h6"/>',
+ files:'<path d="M14 3H7a2 2 0 00-2 2v14a2 2 0 002 2h10a2 2 0 002-2V8z"/><path d="M14 3v5h5M9 13h6M9 17h6"/>',
+ clock:'<circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/>',
+ alert:'<path d="M12 3l10 18H2z"/><path d="M12 10v5M12 18h.01"/>',
+ tasks:'<rect x="4" y="4" width="16" height="16" rx="2"/><path d="M8 12l3 3 5-6"/>',
+ down:'<path d="M12 4v12M7 11l5 5 5-5"/><path d="M4 20h16"/>',
+ up:'<path d="M12 20V8M7 13l5-5 5 5"/><path d="M4 4h16"/>',
+ chart:'<path d="M4 20V4M4 20h16"/><path d="M8 16v-5M12 16V8M16 16v-8"/>',
+ staff:'<circle cx="12" cy="8" r="3.5"/><path d="M5 20c0-4 3.1-6 7-6s7 2 7 6"/>',
+ folder:'<path d="M3 7a2 2 0 012-2h4l2 2h8a2 2 0 012 2v8a2 2 0 01-2 2H5a2 2 0 01-2-2z"/>',
+ gear:'<circle cx="12" cy="12" r="3"/><path d="M12 2v3M12 19v3M2 12h3M19 12h3M4.9 4.9l2.1 2.1M17 17l2.1 2.1M19.1 4.9L17 7M7 17l-2.1 2.1"/>',
+ search:'<circle cx="11" cy="11" r="7"/><path d="M20 20l-4-4"/>',
+ bell:'<path d="M6 17V11a6 6 0 0112 0v6l2 2H4z"/><path d="M10 21h4"/>',
+ sun:'<circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M2 12h2M20 12h2M5 5l1.5 1.5M17.5 17.5L19 19M5 19l1.5-1.5M17.5 6.5L19 5"/>',
+ moon:'<path d="M20 14.5A8 8 0 019.5 4a8 8 0 1010.5 10.5z"/>',
+ menu:'<path d="M4 7h16M4 12h16M4 17h16"/>',x:'<path d="M6 6l12 12M18 6L6 18"/>',
+ plus:'<path d="M12 5v14M5 12h14"/>',phone:'<path d="M5 4h4l2 5-2.5 1.5a11 11 0 005 5L15 13l5 2v4a2 2 0 01-2 2A16 16 0 013 6a2 2 0 012-2z"/>',
+ print:'<path d="M7 9V4h10v5M7 17H5a2 2 0 01-2-2v-4a2 2 0 012-2h14a2 2 0 012 2v4a2 2 0 01-2 2h-2"/><path d="M7 14h10v6H7z"/>',
+ dl:'<path d="M12 4v11M7 11l5 5 5-5M5 20h14"/>',copy:'<rect x="8" y="8" width="12" height="12" rx="2"/><path d="M16 8V6a2 2 0 00-2-2H6a2 2 0 00-2 2v8a2 2 0 002 2h2"/>',
+ edit:'<path d="M4 20h4L19 9l-4-4L4 16z"/>',trash:'<path d="M4 7h16M9 7V4h6v3M6 7l1 13h10l1-13"/>',check:'<path d="M5 12l5 5 9-10"/>',
+cloud:'<path d="M7 18a4 4 0 010-8 5.5 5.5 0 0110.6 1.2A3.5 3.5 0 0117 18z"/>',
+ spark:'<path d="M12 3l2 6 6 2-6 2-2 6-2-6-6-2 6-2z"/>',out:'<path d="M10 4H5v16h5M15 8l4 4-4 4M19 12H9"/>'
+};
+const ic=(n)=>`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${IC[n]||''}</svg>`;
+let FID=0;
+const opt=(arr,val)=>arr.map(o=>{const [v,l]=Array.isArray(o)?o:[o,o];return `<option value="${esc(v)}"${String(v)===String(val)?' selected':''}>${esc(l)}</option>`}).join('');
+const F={
+ t:(n,l,v='',a='')=>{const i='f'+(++FID);return `<div class="field"><label for="${i}">${l}</label><input id="${i}" name="${n}" value="${esc(v)}" ${a}></div>`},
+ n:(n,l,v='',a='')=>F.t(n,l,v,`inputmode="decimal" autocomplete="off" ${a}`),
+ d:(n,l,v='',a='')=>{const i='f'+(++FID);return `<div class="field"><label for="${i}">${l}</label><input id="${i}" type="date" name="${n}" value="${esc(v)}" ${a}></div>`},
+ s:(n,l,o,v='',a='')=>{const i='f'+(++FID);return `<div class="field"><label for="${i}">${l}</label><select id="${i}" name="${n}" ${a}>${opt(o,v)}</select></div>`},
+ a:(n,l,v='',a='')=>{const i='f'+(++FID);return `<div class="field"><label for="${i}">${l}</label><textarea id="${i}" name="${n}" ${a}>${esc(v)}</textarea></div>`}
+};
+const empOpts=(only)=>vUsers().filter(u=>u.active).map(u=>[u.id,u.name+(only?'':' — '+ROLES[u.role])]);
+const stOpts=ST.map(s=>[s.k,s.n]);
+const pill=c=>`<span class="pill ${G(c).g}">${esc(STM[c.status].n)}</span>`;
+function toast(m,k=''){const b=$('#toastbox');b.innerHTML=`<div class="toast ${k}" role="status">${esc(m)}</div>`;clearTimeout(toast.t);toast.t=setTimeout(()=>b.innerHTML='',3800)}
+const ferr=(f,m)=>{const e=$('.formerr',f);if(e){e.textContent=m||''}else toast(m,'bad')};
+/* النوافذ */
+function pushModal(o){const el=document.createElement('div');el.className='ov';el.innerHTML=`<div class="modal ${o.wide?'wide':''}" role="dialog" aria-modal="true"><div class="m-head"><h3></h3><button class="icon-btn" data-act="closeModal" aria-label="إغلاق">${ic('x')}</button></div><div class="m-body"></div></div>`;
+ $('#modals').appendChild(el);const m={el,o};MODALS.push(m);renderModal(m);document.body.classList.add('noscroll');
+ el.addEventListener('mousedown',e=>{if(e.target===el)closeModal(m)});const f=$('input:not([type=hidden]):not([readonly]),select,textarea',$('.m-body',el));if(f&&!o.noFocus)setTimeout(()=>f.focus({preventScroll:true}),40);return m}
+function renderModal(m){$('h3',m.el).textContent=typeof m.o.title==='function'?m.o.title():m.o.title;$('.m-body',m.el).innerHTML=m.o.body();m.o.mount&&m.o.mount(m.el)}
+function closeModal(m){m=m||MODALS[MODALS.length-1];if(!m)return;m.el.remove();MODALS=MODALS.filter(x=>x!==m);m.o.onClose&&m.o.onClose();if(!MODALS.length)document.body.classList.remove('noscroll')}
+function closeAll(){while(MODALS.length)closeModal()}
+function ask(msg,label,fn,danger){const m=pushModal({title:'تأكيد',noFocus:true,body:()=>`<p style="margin:0">${msg}</p><div class="btns"><button class="btn ${danger?'danger':'primary'}" data-act="askYes">${esc(label)}</button><button class="btn" data-act="closeModal">تراجع</button></div>`});m.yes=fn}
+/* التسجيل: أوامر ونماذج */
+const ACT={},FORMS={},INP={},CHG={},S={cf:{q:'',status:'',service:'',emp:'',late:''},cu:{q:'',type:'',tab:''},fu:'today',tk:{tab:'today',emp:''},rc:{from:'',to:'',q:''},ex:{from:'',to:'',cat:''},rp:{tab:'sum',preset:'month',from:'',to:'',service:'',emp:'',cust:'',status:''},df:{q:'',cat:''},dash:'month',staff:'users',newCust:'',auditQ:'',aud:{q:'',uid:'',act:'',from:'',to:''}};
+document.addEventListener('click',e=>{const b=e.target.closest('[data-act]');if(!b)return;const f=ACT[b.dataset.act];if(f)f(b.dataset,b,e)});
+document.addEventListener('submit',e=>{const f=e.target.closest('form[data-form]');if(!f)return;e.preventDefault();const h=FORMS[f.dataset.form];if(h)h(Object.fromEntries(new FormData(f)),f)});
+document.addEventListener('input',e=>{const t=e.target.closest('[data-input]');if(t&&INP[t.dataset.input])INP[t.dataset.input](t.value,t)});
+document.addEventListener('change',e=>{const t=e.target.closest('[data-change]');if(t&&CHG[t.dataset.change])CHG[t.dataset.change](t.value,t,e)});
+document.addEventListener('keydown',e=>{if(e.key==='Escape'){if(MODALS.length)closeModal();else{document.body.classList.remove('menu-open');hideSearch()}}});
+document.addEventListener('click',e=>{if(!e.target.closest('.gsearch'))hideSearch()});
+ACT.closeModal=()=>closeModal();
+ACT.askYes=(d,b)=>{const m=MODALS.find(x=>x.el.contains(b));const fn=m&&m.yes;closeModal(m);fn&&fn()};
+ACT.menu=()=>{document.body.classList.toggle('menu-open');syncScrim()};
+function syncScrim(){let s=$('.scrim');if(document.body.classList.contains('menu-open')){if(!s){s=document.createElement('div');s.className='scrim';s.dataset.act='menu';document.body.appendChild(s)}}else if(s)s.remove()}
+/* السمة */
+function applyTheme(){let t='';try{t=localStorage.getItem('so.theme')||''}catch(e){}if(t)document.documentElement.dataset.theme=t;else delete document.documentElement.dataset.theme;const b=$('#themebtn');if(b)b.innerHTML=ic(t==='dark'||(!t&&matchMedia('(prefers-color-scheme:dark)').matches)?'sun':'moon')}
+ACT.theme=()=>{let t='';try{t=localStorage.getItem('so.theme')||''}catch(e){}const dark=t==='dark'||(!t&&matchMedia('(prefers-color-scheme:dark)').matches);try{localStorage.setItem('so.theme',dark?'light':'dark')}catch(e){document.documentElement.dataset.theme=dark?'light':'dark'}applyTheme()};
+/* التنقل */
+const NAV=[['home','الرئيسية','home',()=>true],['customers','العملاء','users',()=>can('customers.view')||can('taxclients.view')],['newcase','إضافة ملف جديد','filePlus',()=>can('cases.edit')],['cases','جميع الملفات','files',()=>can('cases.view')],['followups','متابعة اليوم','clock',()=>can('followups')],['overdue','الملفات المتأخرة','alert',()=>can('cases.view')],['tasks','المهام','tasks',()=>can('tasks')],['receipts','التحصيلات','down',()=>can('receipts')],['expenses','المصروفات','up',()=>can('expenses')],['reports','الحسابات والتقارير','chart',()=>can('reports')],['staff','الموظفون','staff',()=>isAdm()],['docs','المستندات','folder',()=>can('docs')],['options','الإعدادات','gear',()=>true]];
+const VIEWS={},LISTS={};let route='home';
+function badges(){const t=T(),cs=visCases().filter(c=>G(c).g!=='done');return{followups:cs.filter(c=>c.followDate&&c.followDate<=t).length,overdue:cs.filter(isLate).length,tasks:can('tasks')?DB.tasks.filter(x=>!x.deleted&&!x.done&&x.assigneeId===ME.id&&x.due<=t).length:0}}
+function drawChrome(){const b=badges();
+ $('#side').innerHTML=`<div class="brand"><div class="logo">${brandLogo()}</div><div><b>${esc(appName())}</b><small>${esc(DB.settings.office)}</small></div></div>
+ <nav class="nav" aria-label="القائمة الرئيسية">${NAV.filter(n=>n[3]()).map(([k,l,i])=>`<a href="#${k}" class="${route===k?'on':''}" data-act="navgo">${ic(i)}<span>${l}</span>${b[k]?`<span class="badge${k==='followups'?' soft':''}">${b[k]}</span>`:''}</a>`).join('')}</nav>
+ <div class="side-foot"><div><b>${esc(ME.name)}</b><span>${ROLES[ME.role]}</span></div><button class="btn sm" data-act="logout" style="background:transparent;color:var(--side-fg);border-color:rgba(255,255,255,.25)">${ic('out')} تسجيل الخروج</button></div>`;
+ const nm=NAV.find(n=>n[0]===route);$('#ptitle').textContent=nm?nm[1]:'';document.title=appName();
+ const bt=(can('customers.view')||can('taxclients.view'))?['customers','العملاء','users']:['cases','الملفات','files'];
+ const items=[['home','الرئيسية','home'],['followups','المتابعة','clock'],can('cases.edit')?['newcase','ملف جديد','filePlus','fab']:['overdue','المتأخرة','alert'],bt,['more','المزيد','menu']];
+ $('#bottom').innerHTML=items.map(([k,l,i,f])=>k==='more'?`<a data-act="menu" role="button" tabindex="0">${ic(i)}<span>${l}</span></a>`:`<a href="#${k}" class="${route===k?'on':''} ${f||''}" data-act="navgo">${f?`<span class="fabi">${ic(i)}</span>`:ic(i)}<span>${l}</span></a>`).join('');
+ const n=myAlerts().filter(a=>a.p>=1).length;$('#bellbtn').innerHTML=ic('bell')+(n?`<span class="dot">${n}</span>`:'');$('#gsic').innerHTML=IC.search;$$('.menu-btn').forEach(x=>x.innerHTML=ic('menu'));applyTheme();updateSyncBtn()}
+ACT.navgo=()=>{document.body.classList.remove('menu-open');syncScrim()};
+let LASTNAV='',LASTNAVT=0;
+function trackNav(r){const t=Date.now();if(r===LASTNAV&&t-LASTNAVT<3000)return;LASTNAV=r;LASTNAVT=t;const n=NAV.find(x=>x[0]===r);log('زيارة','صفحة',r,`فتح صفحة «${n?n[1]:r}»`)}
+function render(){let r=(location.hash||'').slice(1);const n=NAV.find(x=>x[0]===r);route=n&&n[3]()?r:'home';trackNav(route);drawChrome();$('#view').innerHTML=VIEWS[route]();window.scrollTo({top:0});const v=VIEWS[route+'_mount'];v&&v()}
+function refresh(){if(!ME)return;const y=window.scrollY;drawChrome();$('#view').innerHTML=VIEWS[route]();window.scrollTo({top:y});MODALS.filter(m=>m.o.live).forEach(m=>{try{renderModal(m)}catch(e){closeModal(m)}})}
+window.addEventListener('hashchange',()=>{if(ME){closeAll();render()}});
+const go=r=>{if(location.hash==='#'+r)render();else location.hash=r};
+ACT.go=d=>{closeAll();go(d.to)};
+/* الدخول */
+const appName=()=>DB.settings.appName||'SMART OFFICE';
+const brandLogo=()=>`<img src="${DB.settings.logo?esc(DB.settings.logo):'icon-192.png'}" alt="">`;
+let LOGIN={fails:0,until:0};
+function showLogin(){$('#shell').classList.add('hide');$('#bottom').classList.add('hide');const l=$('#login');l.classList.remove('hide');document.title=appName();
+ l.innerHTML=`<form class="login" data-form="login"><div class="brand"><div class="logo">${brandLogo()}</div><div><b>${esc(appName())}</b><small>${esc(DB.settings.office)}</small></div></div>
+ <div class="field"><label for="lg-p">كلمة المرور</label><input id="lg-p" name="p" type="password" autocomplete="current-password" required></div>
+ <div class="formerr" role="alert"></div><button class="btn primary" type="submit">دخول</button><button class="btn ghost sm" type="button" data-act="linkDev">${ic('cloud')} ربط هذا الجهاز بمكتب موجود (كود الربط)</button>
+ ${DB.demo?`<div class="hint-box"><b>نسخة تجريبية ببيانات أمثلة.</b> كلمات المرور: <code>100100</code> مدير، <code>200200</code> موظفة، <code>300300</code> محاسب، <code>400400</code> مندوب. غيّرها من الموظفين قبل الاستخدام الفعلي.</div>`:''}</form>`;
+ setTimeout(()=>$('#lg-p')&&$('#lg-p').focus(),50)}
+FORMS.login=async(d,f)=>{const now=Date.now();if(LOGIN.until>now)return ferr(f,`محاولات كثيرة خاطئة. حاول بعد ${Math.ceil((LOGIN.until-now)/1000)} ثانية`);
+ const hits=[];for(const x of DB.users){if(x.active&&x.pw===await hashPw(d.p,x.salt))hits.push(x)}
+ if(!hits.length){LOGIN.fails++;log('محاولة دخول فاشلة','نظام','','محاولة دخول بكلمة مرور غير صحيحة');if(LOGIN.fails>=5){LOGIN.fails=0;LOGIN.until=Date.now()+30000}flushAud();return ferr(f,'كلمة المرور غير صحيحة')}
+ if(hits.length>1){log('محاولة دخول فاشلة','نظام','','كلمة مرور مشتركة بين أكثر من حساب');flushAud();return ferr(f,'كلمة المرور مشتركة بين أكثر من حساب. راجع مدير النظام لتغييرها.')}
+ LOGIN.fails=0;enter(hits[0],true)};
+function welcome(){const n=myAlerts().filter(a=>a.p>=1).length;pushModal({title:'أهلاً بك',noFocus:true,body:()=>`<div style="text-align:center;display:grid;gap:10px;padding:8px 0"><div class="logo" style="margin:0 auto;width:64px;height:64px;border-radius:16px">${brandLogo()}</div><h3 style="font-size:20px">مرحباً ${esc(ME.name)}</h3><p style="margin:0;font-size:16px">مرحباً بك في نظام ${esc(DB.settings.office)}</p>${n?`<div class="banner warn" style="justify-content:center">لديك ${n} تنبيهات تحتاج انتباهك</div>`:''}<button class="btn primary" data-act="closeModal">ابدأ العمل</button></div>`})}
+function enter(u,fresh){ME=u;try{sessionStorage.setItem('so.uid',u.id)}catch(e){}$('#login').classList.add('hide');$('#shell').classList.remove('hide');$('#bottom').classList.remove('hide');
+ if(fresh){log('دخول','نظام',u.id,`دخول المستخدم ${u.name}`);save()}render();if(fresh)welcome()}
+ACT.logout=()=>{log('خروج','نظام',ME.id,`خروج المستخدم ${ME.name}`);save();flushAud();ME=null;try{sessionStorage.removeItem('so.uid')}catch(e){}closeAll();document.body.classList.remove('menu-open');syncScrim();showLogin()};
+
+/* ================= بيانات تجريبية ================= */
+const mn=(a,b)=>a<b?a:b;
+async function seed(){
+ DB={v:1,demo:true,settings:{office:'سمارت اوفيس',staleDays:7,openingBalance:5000,
+  services:[['الإقرارات الضريبية',1200],['التسجيل والتعديلات الضريبية',800],['تراخيص المحلات',3500],['تأسيس الشركات',9000],['السجل التجاري',1500],['البطاقة الضريبية',600],['خدمات التأمينات',700],['الخدمات الحكومية',500],['ملفات البنوك والتمويل',2500],['خدمات المحاسبة',3000],['الخدمات الإلكترونية',400]].map(([n,p])=>({n,p})),
+  sources:['توصية عميل','فيسبوك','زيارة مباشرة','واتساب','إعلان','أخرى']},
+  users:[],customers:[],cases:[],receipts:[],expenses:[],tasks:[],docs:[],audit:[],counters:{}};
+ DB.users.push(await mkUser('المدير العام','admin','admin','100100',0,'01000000001'),await mkUser('سارة أحمد','sara','employee','200200',5000,'01000000002'),await mkUser('محمود حسن','mahmoud','accountant','300300',4500,'01000000003'),await mkUser('كريم علي','karim','rep','400400',3800,'01000000004'),await mkUser('نورا سمير','nora','employee','500500',5000,'01000000005'));
+ const [ad,sa,ma,ka,no]=DB.users;ME=ad;const t=T(),d=n=>addDays(t,n);
+ const cu=[['أحمد محمود السيد','01000000101','فرد','توصية عميل'],['شركة النور للتجارة','01000000102','شركة','فيسبوك'],['مؤسسة الأمل للمقاولات','01000000103','مؤسسة','زيارة مباشرة'],['سوبر ماركت الخير','01000000104','محل','واتساب'],['مها عبد الله','01000000105','فرد','توصية عميل'],['مطعم البيت الشامي','01000000106','محل','إعلان'],['شركة دلتا للتوريدات','01000000107','شركة','فيسبوك'],['يوسف إبراهيم','01000000108','فرد','زيارة مباشرة']].map(x=>addCustomer({name:x[0],phone:x[1],type:x[2],source:x[3],address:'القاهرة'}).customer);
+ const U=[sa,no,ka,ma];
+ const rows=[[0,'الإقرارات الضريبية','doing',sa,no,-12,0,-2,1200,600,[100],'مراجعة بيانات الربع الثالث'],[1,'تأسيس الشركات','gov',no,no,-20,2,5,9000,4500,[800,300],'متابعة عقد التأسيس'],[2,'السجل التجاري','docs',sa,sa,-6,-1,6,1500,0,[],'استلام صورة البطاقة من العميل'],
+ [3,'تراخيص المحلات','review',no,sa,-3,1,10,3500,1000,[200],'معاينة اللجنة'],[4,'البطاقة الضريبية','new',sa,sa,0,1,4,600,0,[],'مراجعة المستندات'],[5,'خدمات المحاسبة','doing',no,no,-30,0,-5,3000,3000,[],'إعداد القوائم الشهرية'],
+ [6,'ملفات البنوك والتمويل','client',ka,sa,-9,3,12,2500,1000,[150],'انتظار كشف الحساب من العميل'],[0,'التسجيل والتعديلات الضريبية','done',sa,sa,-15,1,-1,800,300,[60],'تسليم الملف للعميل'],
+ [7,'الخدمات الحكومية','delivered',ka,ka,-25,-10,-18,500,500,[40],'-'],[1,'خدمات التأمينات','closed',no,no,-40,-30,-35,700,700,[50],'-'],[2,'الإقرارات الضريبية','stalled',sa,sa,-18,-4,-6,1200,0,[],'تواصل مع العميل لاستكمال البيانات'],
+ [3,'الخدمات الإلكترونية','ready',ka,ka,-2,0,3,400,400,[],'تفعيل الخدمة'],[5,'السجل التجاري','new',no,no,0,0,6,1500,500,[],'حجز موعد الجهة'],[6,'الإقرارات الضريبية','doing',sa,sa,-8,2,1,1200,0,[30],'رفع الإقرار إلكترونياً']];
+ for(const [ci,sv,st,resp,fol,od,fd,ed,price,pd_,costs,next] of rows){
+  const r=addCase({customerId:cu[ci].id,service:sv,price,responsibleId:resp.id,followerId:fol.id,openDate:d(od),followDate:d(fd),expectedDate:d(ed),nextStep:next,execType:EXEC[(od+40)%4]});const c=r.case;
+  if(st!=='new'&&st!=='closed'&&st!=='delivered')setStatus(c.id,st,'');
+  if(pd_>0){const a=Math.round(pd_/2);const d1=mn(t,d(od+1)),d2=mn(t,d(od+8));addReceipt({caseId:c.id,amount:a,date:d1,method:PAYM[Math.abs(od)%3]});if(pd_-a>0)addReceipt({caseId:c.id,amount:pd_-a,date:d2,method:PAYM[1]})}
+  costs.forEach(x=>{if(x>0)addExpense({category:'تنفيذ ملفات',caseId:c.id,amount:x,date:mn(t,d(od+2)),note:'رسوم وانتقالات الملف'})});
+  if(st==='delivered'){setStatus(c.id,'done','');setStatus(c.id,'delivered','')}if(st==='closed'){setStatus(c.id,'done','');setStatus(c.id,'delivered','');setStatus(c.id,'closed','')}
+  c.updatedAt=new Date(Date.now()+Math.min(0,od)*864e5/3).toISOString()}
+ const mk=(date)=>date>t?t:date;
+ addExpense({category:'الإيجار',amount:4000,date:mk(monthStart(t)),note:'إيجار المكتب'});addExpense({category:'الإيجار',amount:4000,date:addDays(monthStart(t),-30>0?0:-28),note:'إيجار الشهر الماضي'});
+ addExpense({category:'الكهرباء والإنترنت',amount:450,date:d(-5)});addExpense({category:'الانتقالات',amount:120,date:d(-2)});addExpense({category:'مصروفات متنوعة',amount:90,date:d(-1),note:'ضيافة وأدوات مكتبية'});
+ addExpense({category:'أجور موظفين',employeeId:sa.id,amount:5000,date:d(-3),note:'راتب الشهر'});
+ [['مراجعة إقرار شركة دلتا قبل الرفع',sa,'h',0],['الاتصال بالعملاء المتأخرين في السداد',ma,'m',-1],['إحضار ختم الشركة من العميل',ka,'h',1],['تجهيز ملف البنك لمؤسسة الأمل',no,'m',3],['تحديث قائمة الأسعار',sa,'l',-3]].forEach(([ti,a,p,dd],i)=>{const r=addTask({title:ti,assigneeId:a.id,priority:p,due:d(dd),caseId:i===0?DB.cases[13].id:''});if(i===4)r.task.done=true});
+ ME=null;save()}
+/* ================= عناصر عرض مشتركة ================= */
+const setPath=(o,p,v)=>{const k=p.split('.');let x=o;while(k.length>1)x=x[k.shift()];x[k[0]]=v};
+const PEND={};
+function flushSearch(where){const p=PEND[where];if(!p)return;clearTimeout(p.t);delete PEND[where];log('بحث','بحث',where,`بحث في ${where} عن «${p.q}»${p.n!=null?` — ${p.n} نتيجة`:''}`)}
+function logSearch(where,q,n){q=(q||'').trim();if(q.length<2)return;if(PEND[where])clearTimeout(PEND[where].t);PEND[where]={q,n,t:setTimeout(()=>flushSearch(where),1200)}}
+const SRCQ={'cu.q':'العملاء','cf.q':'الملفات','rc.q':'التحصيلات','df.q':'المستندات'};
+const FLTL={'cf.service':'الخدمة','rp.service':'الخدمة (التقارير)','cf.status':'الحالة','cf.emp':'الموظف'};
+const fltText=t=>t.tagName==='SELECT'?t.options[t.selectedIndex].text:t.value;
+INP.flt=(v,t)=>{const k=t.dataset.s;setPath(S,k,v);if(SRCQ[k])logSearch('قائمة '+SRCQ[k],v,null);else if(FLTL[k]&&v)log('بحث','تصفية',k,`تصفية حسب ${FLTL[k]}: «${fltText(t)}»`);const l=$('#vlist');if(l)l.innerHTML=LISTS[route]()};
+CHG.flt=INP.flt;
+CHG.rflt=(v,t)=>{setPath(S,t.dataset.s,v);if(FLTL[t.dataset.s]&&v)log('بحث','تصفية',t.dataset.s,`تصفية حسب ${FLTL[t.dataset.s]}: «${fltText(t)}»`);refresh()};
+const custDL=()=>`<datalist id="dl-cust">${liveCust().filter(taxOK).map(c=>`<option value="${esc(c.name+' — '+c.phone)}"></option>`).join('')}</datalist>`;
+const caseDL=(f)=>`<datalist id="dl-case">${visCases().filter(f||(()=>true)).map(c=>`<option value="${esc(c.no+' · '+cName(c.customerId)+(can('price.view')?' · متبقي '+nf(remain(c)):''))}"></option>`).join('')}</datalist>`;
+function resolveCust(txt){txt=(txt||'').trim();if(!txt)return null;const all=liveCust().filter(taxOK);let c=all.find(x=>x.name+' — '+x.phone===txt);if(c)return c;const p=normPhone(txt);if(p.length>=8){c=all.find(x=>normPhone(x.phone)===p||normPhone(x.phone2)===p);if(c)return c}c=all.find(x=>x.code.toLowerCase()===txt.toLowerCase());if(c)return c;const m=all.filter(x=>normName(x.name)===normName(txt));return m.length===1?m[0]:null}
+const resolveCase=txt=>{const no=(txt||'').split(' · ')[0].trim();return liveCases().find(x=>x.no.toLowerCase()===no.toLowerCase())||null};
+const empty=(t,s)=>`<div class="empty"><b>${t}</b>${s||''}</div>`;
+const lateTag=c=>isLate(c)?`<span class="pill bad">${c.status==='stalled'&&!lateDays(c)?'متوقف':'متأخر '+lateDays(c)+' يوم'}</span>`:'';
+function caseRow(c,acts=''){const late=isLate(c),t=T(),soon=!late&&G(c).g!=='done'&&c.followDate&&c.followDate<=addDays(t,1);const cu=cust(c.customerId);
+ return `<div class="row ${late?'late':soon?'soon':''}" data-act="openCase" data-id="${c.id}" tabindex="0"><div><div class="t"><span class="no">${c.no}</span>${esc(cu?.name)}</div><div class="sub">${esc(c.service)} · <span class="num">${esc(cu?.phone||'')}</span></div></div>
+ <div>${pill(c)} ${lateTag(c)}</div><div class="sub">الخطوة: ${esc(c.nextStep||'—')}<br>متابعة ${fmtD(c.followDate)} · ${esc(uName(c.responsibleId))}</div>
+ <div class="end">${can('price.view')?`${nf(c.price)}<small>متبقي ${nf(remain(c))}</small>`:''}</div>${acts?`<div class="acts">${acts}</div>`:''}</div>`}
+document.addEventListener('keydown',e=>{if(e.key==='Enter'&&e.target.classList&&e.target.classList.contains('row')&&e.target.dataset.act)e.target.click()});
+const btnAdd=(act,label,d='')=>`<button class="btn primary" data-act="${act}" ${d}>${ic('plus')} ${label}</button>`;
+const money2=(n,cls='')=>`<span class="num ${cls}">${money(n)}</span>`;
+/* ================= الرئيسية ================= */
+const MON=['يناير','فبراير','مارس','أبريل','مايو','يونيو','يوليو','أغسطس','سبتمبر','أكتوبر','نوفمبر','ديسمبر'];
+function monthly(){const out=[],t=T();const [y,m]=pd(t);for(let i=5;i>=0;i--){const dt=new Date(y,m-1-i,1),s=dstr(dt),r=[s,monthEnd(s)];const f=finStats(r);out.push({l:MON[dt.getMonth()],v:f.value,c:f.collected,e:f.execCost+f.opex})}return out}
+function chartSVG(data){const W=640,H=230,L=48,B=28,Tp=12,max=Math.max(1,...data.flatMap(x=>[x.v,x.c,x.e]));const step=Math.pow(10,Math.floor(Math.log10(max)));let top=Math.ceil(max/step)*step;if(top/step<2)top=step*2;
+ const bw=14,gw=(W-L-8)/data.length,ph=H-B-Tp;const y=v=>Tp+ph-(v/top)*ph;let g='';
+ for(let i=0;i<=4;i++){const v=top/4*i;g+=`<line class="grid" x1="${L}" x2="${W-8}" y1="${y(v)}" y2="${y(v)}"/><text x="${L-6}" y="${y(v)+4}" text-anchor="end">${v>=1000?nf(v/1000)+'ك':nf(v)}</text>`}
+ data.forEach((d,i)=>{const cx=W-8-gw*(i+.5);[['b1',d.v,-1],['b2',d.c,0],['b3',d.e,1]].forEach(([c,v,o])=>{const x=cx+o*(bw+2)-bw/2,h=Math.max(v?2:0,ph-(y(v)-Tp));g+=`<rect class="${c}" x="${x}" y="${y(v)}" width="${bw}" height="${h}" rx="3"><title>${d.l}: ${money(v)}</title></rect>`});g+=`<text x="${cx}" y="${H-8}" text-anchor="middle">${d.l}</text>`});
+ return `<svg class="chart" viewBox="0 0 ${W} ${H}" width="100%" role="img" aria-label="رسم بياني للإيرادات والتحصيلات والمصروفات لآخر 6 أشهر">${g}</svg>`}
+const kpi=(l,v,o={})=>`<div class="kpi ${o.c||''} ${o.go?'click':''}" ${o.go?`data-act="kgo" data-to="${o.go}" data-st="${o.st||''}" data-late="${o.late||''}" tabindex="0" role="button"`:''}><span class="l">${l}</span><span class="v">${v}</span>${o.s?`<span class="s">${o.s}</span>`:''}</div>`;
+ACT.kgo=d=>{S.cf={q:'',status:d.st||'',service:'',emp:'',late:d.late||''};go(d.to)};
+ACT.dash=d=>{S.dash=d.p;refresh()};
+VIEWS.home=()=>{const t=T(),cs=visCases(),act=cs.filter(c=>G(c).g!=='done'),late=cs.filter(isLate),todayF=act.filter(c=>c.followDate===t),pv=can('price.view'),cv=can('cost.view');
+ const cnt=g=>cs.filter(c=>GG(c)===g).length,r=periodRange(S.dash),f=finStats(r);
+ const dateTxt=new Date().toLocaleDateString('ar-EG-u-nu-latn',{weekday:'long',day:'numeric',month:'long',year:'numeric'});
+ const top=act.slice().sort(by(c=>-priority(c))).slice(0,6);
+ const toCall=[];act.filter(c=>c.followDate&&c.followDate<=t).sort(by(c=>c.followDate)).forEach(c=>{if(!toCall.find(x=>x.customerId===c.customerId))toCall.push(c)});
+ const al=isAdm()?managerAlerts():[];
+ const per=isAdm()?vUsers().filter(u=>u.active).map(u=>{const mine=liveCases().filter(c=>c.responsibleId===u.id);const done=mine.filter(c=>G(c).g==='done').length;return{u,n:mine.length,act:mine.length-done,done,late:mine.filter(isLate).length,col:sum(liveRec().filter(x=>mine.some(c=>c.id===x.caseId)),x=>x.amount),rate:mine.length?done/mine.length:0}}).filter(x=>x.n):[];
+ const logs=audVis().filter(a=>(isAdm()||a.uid===ME.id)&&!NOISE.has(a.action)).slice(0,8);
+ const per_tab=[['today','اليوم'],['month','هذا الشهر'],['all','كل الفترات']];
+ const sentence=`${todayF.length?`لديك ${todayF.length} ${todayF.length===1?'متابعة':'متابعات'} اليوم`:'لا متابعات مجدولة اليوم'}${late.length?`، و${late.length} ${late.length===1?'ملف متأخر':'ملفات متأخرة'} تحتاج تدخلاً`:'، ولا توجد ملفات متأخرة'}.`;
+ return `${DB.demo&&isAdm()?`<div class="banner warn"><span>أنت تعمل على <b>بيانات تجريبية</b> للتعرف على النظام.</span><button class="btn sm" data-act="clearDemo">حذف البيانات التجريبية والبدء</button></div>`:''}
+ ${al.map(a=>`<div class="banner ${a.k}"><span>${esc(a.t)}</span><button class="btn sm" data-act="alertgo" data-to="${a.go}" data-tab="${a.tab||''}">عرض</button></div>`).join('')}
+ <section class="hello"><h1>وضع المكتب اليوم</h1><p>${dateTxt}</p><p class="lead">${sentence}</p></section>
+ <div class="kgroup"><h4>الملفات والعملاء</h4><div class="kpis">
+  ${(can('customers.view')||can('taxclients.view'))?kpi('إجمالي العملاء',nf(visibleCust().length),{go:'customers'}):''}
+  ${kpi('إجمالي الملفات',nf(cs.length),{go:'cases'})}${kpi('ملفات جديدة',nf(cnt('new')),{go:'cases',st:'g:new'})}${kpi('قيد التنفيذ',nf(cnt('prog')),{go:'cases',st:'g:prog'})}${kpi('مكتملة',nf(cnt('done')),{go:'cases',st:'g:done'})}
+  ${kpi('متأخرة أو متوقفة',nf(late.length),{go:'cases',late:'1',c:late.length?'bad':''})}${kpi('متابعة اليوم',nf(todayF.length),{go:'followups',c:todayF.length?'warn':''})}</div></div>
+ ${pv?`<div class="kgroup"><div class="card-h" style="margin:0"><h4>المالية</h4><div class="tabs">${per_tab.map(([k,l])=>`<button class="tab ${S.dash===k?'on':''}" data-act="dash" data-p="${k}">${l}</button>`).join('')}</div></div><div class="kpis">
+  ${kpi('إجمالي قيمة الخدمات',money(f.value),{s:`${f.n} ملف فُتحت بالفترة`})}${kpi('المبالغ المحصّلة',money(f.collected),{c:'good',s:'تحصيلات الفترة'})}${kpi('المبالغ المستحقة',money(f.due),{c:f.due?'warn':'',s:'على كل الملفات حتى اليوم'})}
+  ${cv?`${kpi('تكاليف التنفيذ',money(f.execCost))}${kpi('المصروفات التشغيلية',money(f.opex))}${kpi('صافي الربح',money(f.net),{c:f.net<0?'bad':'main',s:'ربح محاسبي: القيمة − المصروفات'})}${kpi('النقد في الخزينة',money(treasury()),{s:'الرصيد الفعلي حتى اليوم'})}`:''}</div>
+  ${cv?'<p class="muted sm" style="margin:0">الربح المحاسبي يحتسب كامل قيمة الخدمات حتى لو لم تُحصّل بعد. النقد في الخزينة يحتسب ما تم تحصيله فعلاً فقط.</p>':''}</div>`:''}
+ <div class="cols">
+  <section class="card"><div class="card-h"><h3>ملفات تحتاج إلى إنجاز</h3><span class="muted sm">مرتبة بالأولوية</span></div>${top.length?`<div class="list">${top.map(c=>caseRow(c)).join('')}</div>`:empty('لا توجد ملفات مفتوحة','كل الملفات منجزة.')}</section>
+  <section class="card"><div class="card-h"><h3>عملاء يجب التواصل معهم</h3></div>${toCall.length?`<div class="list">${toCall.slice(0,6).map(c=>`<div class="row" data-act="openCase" data-id="${c.id}" tabindex="0" style="grid-template-columns:1fr auto"><div><div class="t">${esc(cName(c.customerId))}</div><div class="sub">${esc(c.nextStep||'')} · ${esc(c.no)}</div></div><div class="end"><span class="num">${esc(cust(c.customerId)?.phone)}</span><small>${c.followDate<t?'فائتة منذ '+diffDays(c.followDate,t)+' يوم':'اليوم'}</small></div></div>`).join('')}</div>`:empty('لا يوجد عملاء بانتظار التواصل')}</section></div>
+ ${pv?`<section class="card"><div class="card-h"><h3>آخر ستة أشهر</h3><div class="legend"><span><i style="background:var(--primary)"></i>قيمة الخدمات</span><span><i style="background:var(--brass)"></i>التحصيلات</span><span><i style="background:var(--bad)"></i>المصروفات</span></div></div>${chartSVG(monthly())}</section>`:''}
+ <div class="cols">
+  ${per.length?`<section class="card"><div class="card-h"><h3>أداء الموظفين</h3><span class="muted sm">حسب الملفات المسندة</span></div><div class="tbl-wrap"><table><thead><tr><th>الموظف</th><th class="n">الملفات</th><th class="n">مكتملة</th><th class="n">متأخرة</th><th class="n">المحصّل</th><th>الإنجاز</th></tr></thead><tbody>${per.map(x=>`<tr><td>${esc(x.u.name)}<div class="muted xs">${ROLES[x.u.role]}</div></td><td class="n">${x.n}</td><td class="n">${x.done}</td><td class="n" style="color:${x.late?'var(--bad)':'inherit'}">${x.late}</td><td class="n">${nf(x.col)}</td><td style="min-width:90px"><div class="bar"><i style="width:${Math.round(x.rate*100)}%"></i></div></td></tr>`).join('')}</tbody></table></div></section>`:''}
+  <section class="card"><div class="card-h"><h3>آخر العمليات</h3></div>${logs.length?`<div class="tl">${logs.map(a=>`<div class="ev"><span class="dot"></span><div>${esc(a.desc)}<br><small>${esc(a.uname)} · ${fmtDT(a.ts)}</small></div></div>`).join('')}</div>`:empty('لا توجد عمليات بعد')}</section></div>`};
+ACT.alertgo=d=>{if(d.tab)S.fu=d.tab;if(d.to==='cases')S.cf={q:'',status:'',service:'',emp:'',late:''};go(d.to)};
+ACT.clearDemo=()=>ask('سيتم حذف كل العملاء والملفات والتحصيلات والمصروفات والمهام والمستندات التجريبية. يبقى الموظفون والإعدادات. هل تريد المتابعة؟','نعم، احذف البيانات التجريبية',async()=>{for(const d of DB.docs)await IDB.del(d.id);Object.assign(DB,{customers:[],cases:[],receipts:[],expenses:[],tasks:[],docs:[],counters:{},demo:false});DB.settings.openingBalance=0;log('حذف','نظام','','حذف البيانات التجريبية');save();refresh();toast('تم حذف البيانات التجريبية','good')},true);
+
+/* ================= العملاء ================= */
+VIEWS.customers=()=>`<div class="page-h"><h1>العملاء</h1>${(curTab()==='tax'?can('taxclients.edit'):(can('customers.edit')||can('taxclients.edit')))?btnAdd('newCust',curTab()==='tax'?'إضافة عميل إقرارات':'إضافة عميل',curTab()==='tax'?'data-tax="1"':''):''}</div>${cuTabs()}
+ <div class="card flat"><div class="filters"><div class="field" style="flex:3"><label for="cq">بحث</label><input id="cq" type="search" data-input="flt" data-s="cu.q" value="${esc(S.cu.q)}" placeholder="الاسم أو الهاتف أو رقم العميل"></div>
+ <div class="field"><label for="ct">النوع</label><select id="ct" data-change="flt" data-s="cu.type"><option value="">الكل</option>${opt(CTYPES,S.cu.type)}</select></div></div></div><div class="list" id="vlist">${LISTS.customers()}</div>`;
+LISTS.customers=()=>{const q=normName(S.cu.q),qp=toEn(S.cu.q).replace(/\D/g,'');
+ const a=visibleCust().filter(c=>(curTab()!=='tax'||c.tax)&&(!S.cu.type||c.type===S.cu.type)&&(!q||normName(c.name).includes(q)||c.code.toLowerCase().includes(q)||(qp.length>=3&&(normPhone(c.phone).includes(qp)||normPhone(c.phone2).includes(qp))))).sort(by(c=>c.createdAt,-1));
+ if(!a.length)return empty(S.cu.q?'لا توجد نتائج مطابقة':'لا يوجد عملاء بعد','أضف أول عميل من الزر أعلاه.');
+ return a.map(c=>{const cs=liveCases().filter(x=>x.customerId===c.id),due=sum(cs,remain);return `<div class="row" data-act="openCust" data-id="${c.id}" tabindex="0"><div><div class="t"><span class="no">${c.code}</span>${esc(c.name)}</div><div class="sub">${esc(c.address||'')}</div></div><div><span class="pill">${c.type}</span>${c.tax?' <span class="pill prog">إقرارات ضريبية</span>':''}</div><div class="sub"><span class="num">${esc(c.phone)}</span>${c.phone2?' · <span class="num">'+esc(c.phone2)+'</span>':''}<br>${cs.length} ملف</div><div class="end">${can('price.view')?`${nf(due)}<small>مستحق</small>`:''}</div></div>`}).join('')};
+function custForm(c){c=c||{};return `<form data-form="cust" data-id="${c.id||''}"><input type="hidden" name="force" value=""><div class="fg">${F.t('name','اسم العميل *',c.name||'','required')}${F.t('phone','رقم الهاتف *',c.phone||'','required inputmode="tel"')}${F.t('phone2','رقم هاتف بديل',c.phone2||'','inputmode="tel"')}${F.s('type','نوع العميل',CTYPES,c.type||'فرد')}${F.s('source','مصدر العميل',['',...DB.settings.sources],c.source||'')}${F.d('regDate','تاريخ التسجيل',c.regDate||T())}</div>${taxField(c)}${F.t('address','العنوان',c.address||'')}${F.a('notes','ملاحظات',c.notes||'')}<div class="formerr" role="alert"></div><div class="btns"><button class="btn primary" type="submit">حفظ</button><button class="btn" type="button" data-act="closeModal">إلغاء</button></div></form>`}
+function taxField(c){const cT=can('taxclients.edit'),cN=can('customers.edit');if(cT&&cN)return `<input type="hidden" name="taxf" value="1"><label class="chk"><input type="checkbox" name="tax" value="1" ${c.tax?'checked':''}><span class="tt">عميل إقرارات ضريبية<div class="muted xs">يظهر فقط للموظفين المصرّح لهم بعرض عملاء الإقرارات الضريبية</div></span></label>`;if(cT)return `<input type="hidden" name="taxf" value="1"><input type="hidden" name="tax" value="1">`;return ''}
+const cuTabs=()=>{if(!(can('taxclients.view')&&can('customers.view')))return '';const n=liveCust().filter(c=>c.tax).length;return `<div class="tabs"><button class="tab ${curTab()!=='tax'?'on':''}" data-act="cuTab" data-k="">كل العملاء</button><button class="tab ${curTab()==='tax'?'on':''}" data-act="cuTab" data-k="tax">عملاء الإقرارات الضريبية <span class="c">${n}</span></button></div>`};
+ACT.cuTab=d=>{S.cu.tab=d.k;refresh()};
+ACT.newCust=d=>{if(!can('customers.edit')&&!can('taxclients.edit'))return;const t=!!(d&&d.tax==='1');pushModal({title:t?'إضافة عميل إقرارات ضريبية':'إضافة عميل',body:()=>custForm(t?{tax:true}:{})})};
+ACT.editCust=d=>{const c=cust(d.id);if(!c||!canEditCust(c))return;pushModal({title:'تعديل بيانات العميل',body:()=>custForm(c)})};
+FORMS.cust=(d,f)=>{const id=f.dataset.id||undefined;if(id){const c0=cust(id);if(!c0||!canEditCust(c0))return}else if(!can('customers.edit')&&!can('taxclients.edit'))return;const r=addCustomer(d,id);
+ if(r.err){const e=$('.formerr',f);e.innerHTML=esc(r.err)+(r.dup?` <button type="button" class="btn sm" data-act="openCust" data-id="${r.dup.id}">فتح العميل</button>`:'');return}
+ if(r.warn){const e=$('.formerr',f);e.textContent=r.warn+' اضغط «حفظ على أي حال» إن كان شخصاً آخر.';f.elements.force.value='1';$('button[type=submit]',f).textContent='حفظ على أي حال';return}
+ const wasNew=!id;closeModal();refresh();toast(wasNew?'تمت إضافة العميل':'تم حفظ التعديلات','good');if(wasNew&&S.afterCust){const fn=S.afterCust;S.afterCust=null;fn(r.customer)}};
+function custBody(id){const c=cust(id);if(!c)return '<p>العميل غير موجود</p>';const cs=liveCases().filter(x=>x.customerId===id).sort(by(x=>x.createdAt,-1));const pv=can('price.view');
+ const evs=[...(c.talks||[]).map(x=>({ts:x.ts,t:`<b>${esc(x.type)}</b>: ${esc(x.text)}`,by:x.by,k:'fol'})),...cs.flatMap(x=>x.history.map(h=>({ts:h.ts,t:`${x.no}: ${h.from?STM[h.from].n+' ← ':''}${STM[h.status].n}${h.note&&h.note!=='فتح الملف'?' — '+esc(h.note):h.note==='فتح الملف'?' (فتح الملف)':''}`,by:h.by}))),...(pv?DB.receipts.filter(r=>r.customerId===id&&!r.void).map(r=>({ts:r.ts,t:`تحصيل ${money(r.amount)} — سند ${r.no}`,by:r.by,k:'pay'})):[])].sort(by(e=>e.ts,-1)).slice(0,25);
+ return `<div class="btns">${can('cases.edit')&&(!c.tax||can('taxclients.edit'))?`<button class="btn primary" data-act="caseForCust" data-id="${id}">${ic('filePlus')} ملف جديد لهذا العميل</button>`:''}${canEditCust(c)?`<button class="btn" data-act="editCust" data-id="${id}">${ic('edit')} تعديل</button><button class="btn" data-act="talk" data-id="${id}">${ic('phone')} تسجيل تعامل</button>`:''}${isAdm()?`<button class="btn danger" data-act="delCust" data-id="${id}">${ic('trash')} حذف</button>`:''}</div>
+ <div class="kv"><div><small>رقم العميل</small><b class="num">${c.code}</b></div><div><small>الهاتف</small><b class="num">${esc(c.phone)}</b></div><div><small>هاتف بديل</small><b class="num">${esc(c.phone2||'—')}</b></div><div><small>النوع</small><b>${c.type}</b></div><div><small>المصدر</small><b>${esc(c.source||'—')}</b></div><div><small>تاريخ التسجيل</small><b>${fmtD(c.regDate)}</b></div><div style="grid-column:1/-1"><small>العنوان</small><b>${esc(c.address||'—')}</b></div>${c.notes?`<div style="grid-column:1/-1"><small>ملاحظات</small><b>${esc(c.notes)}</b></div>`:''}</div>
+ ${pv?`<div class="fin"><div><small>عدد الملفات</small><b>${cs.length}</b></div><div><small>إجمالي الخدمات</small><b>${nf(sum(cs,x=>x.price))}</b></div><div><small>المحصّل</small><b>${nf(sum(cs,paid))}</b></div><div><small>المتبقي</small><b style="color:${sum(cs,remain)?'var(--warn)':'inherit'}">${nf(sum(cs,remain))}</b></div></div>`:''}
+ <div><h4 style="margin-bottom:8px">ملفات العميل</h4>${cs.length?`<div class="list">${cs.map(x=>caseRow(x)).join('')}</div>`:empty('لا توجد ملفات لهذا العميل بعد')}</div>
+ <div><h4 style="margin-bottom:8px">سجل التعاملات</h4>${evs.length?`<div class="tl">${evs.map(e=>`<div class="ev"><span class="dot ${e.k||''}"></span><div>${e.t}<br><small>${esc(uName(e.by))} · ${fmtDT(e.ts)}</small></div></div>`).join('')}</div>`:empty('لا توجد تعاملات مسجلة')}</div>`}
+ACT.openCust=d=>{const c0=cust(d.id);if(c0&&!taxOK(c0))return toast('لا تملك صلاحية عرض هذا العميل','bad');log('عرض','عميل',d.id,`فتح بيانات العميل ${c0?c0.name:''}`);return pushModal({title:()=>{const c=cust(d.id);return c?`${c.name} — ${c.code}`:'عميل'},wide:true,live:true,noFocus:true,body:()=>custBody(d.id)})};
+ACT.caseForCust=d=>{S.newCust=d.id;closeAll();go('newcase')};
+ACT.delCust=d=>ask('سيُنقل العميل إلى سلة المحذوفات ويمكن للمدير استعادته من الإعدادات.','حذف العميل',()=>{const r=delEntity('cust',d.id);if(r.err)return toast(r.err,'bad');closeAll();refresh();toast('تم حذف العميل')},true);
+ACT.talk=d=>pushModal({title:'تسجيل تعامل مع العميل',body:()=>`<form data-form="talk" data-id="${d.id}">${F.s('type','نوع التعامل',['اتصال هاتفي','واتساب','زيارة للمكتب','زيارة ميدانية','أخرى'])}${F.a('text','التفاصيل *','','required')}<div class="formerr"></div><button class="btn primary" type="submit">حفظ</button></form>`});
+FORMS.talk=(d,f)=>{if(!d.text.trim())return ferr(f,'اكتب تفاصيل التعامل');const c=cust(f.dataset.id);(c.talks=c.talks||[]).push({ts:nowISO(),by:ME.id,type:d.type,text:d.text.trim()});log('تعامل','عميل',c.id,`تسجيل تعامل مع ${c.name}`);save();closeModal();refresh();toast('تم التسجيل','good')};
+
+/* ================= الملفات ================= */
+VIEWS.cases=()=>`<div class="page-h"><h1>${can('cases.all')?'جميع الملفات':'ملفاتي'}</h1>${can('cases.edit')?`<a class="btn primary" href="#newcase">${ic('plus')} ملف جديد</a>`:''}</div>
+ <div class="card flat"><div class="filters"><div class="field" style="flex:3"><label for="cfq">بحث</label><input id="cfq" type="search" data-input="flt" data-s="cf.q" value="${esc(S.cf.q)}" placeholder="رقم الملف، العميل، الهاتف، الخدمة، الخطوة"></div>
+ <div class="field"><label for="cfs">الحالة</label><select id="cfs" data-change="flt" data-s="cf.status"><option value="">كل الحالات</option>${opt([['g:new','— جديدة'],['g:prog','— قيد التنفيذ (كل مراحله)'],['g:done','— مكتملة'],...stOpts],S.cf.status)}</select></div>
+ <div class="field"><label for="cfv">الخدمة</label><select id="cfv" data-change="flt" data-s="cf.service"><option value="">كل الخدمات</option>${opt(DB.settings.services.map(s=>s.n),S.cf.service)}</select></div>
+ ${can('cases.all')?`<div class="field"><label for="cfe">الموظف</label><select id="cfe" data-change="flt" data-s="cf.emp"><option value="">الكل</option>${opt(empOpts(1),S.cf.emp)}</select></div>`:''}
+ <div class="field"><label for="cfl">التأخر</label><select id="cfl" data-change="flt" data-s="cf.late">${opt([['','الكل'],['1','المتأخرة فقط']],S.cf.late)}</select></div></div></div><div class="list" id="vlist">${LISTS.cases()}</div>`;
+function filterCases(f,base){const q=normName(f.q||''),qp=toEn(f.q||'').replace(/\D/g,'');return (base||visCases()).filter(c=>{const cu=cust(c.customerId);
+ if(f.status){if(f.status.startsWith('g:')){if(GG(c)!==f.status.slice(2))return false}else if(c.status!==f.status)return false}
+ if(f.service&&c.service!==f.service)return false;if(f.emp&&c.responsibleId!==f.emp&&c.followerId!==f.emp)return false;if(f.late&&!isLate(c))return false;
+ if(q&&!(c.no.toLowerCase().includes(q)||normName(cu?.name).includes(q)||normName(c.service).includes(q)||normName(c.nextStep).includes(q)||(qp.length>=3&&normPhone(cu?.phone).includes(qp))))return false;return true})}
+LISTS.cases=()=>{const a=filterCases(S.cf).sort(by(c=>c.createdAt,-1));if(!a.length)return empty('لا توجد ملفات مطابقة','غيّر عوامل التصفية أو أضف ملفاً جديداً.');return `<div class="muted sm">${a.length} ملف${can('price.view')?' · المتبقي '+money(sum(a,remain)):''}</div>`+a.map(c=>caseRow(c)).join('')};
+/* إضافة ملف */
+VIEWS.newcase=()=>{const pre=S.newCust?cust(S.newCust):null;const svc=DB.settings.services[0];const t=T();
+ return `<div class="page-h"><h1>إضافة ملف جديد</h1><span class="muted sm">املأ الحقول المميزة بنجمة وسيُحفظ الباقي تلقائياً</span></div>
+ <form class="card" data-form="newcase" style="gap:16px"><input type="hidden" name="mode" value="old">${custDL()}
+ <div class="fsec"><div class="card-h" style="margin:0"><h4>العميل</h4><div class="seg"><button type="button" class="on" data-act="custMode" data-m="old">عميل موجود</button><button type="button" data-act="custMode" data-m="new">عميل جديد</button></div></div>
+  <div id="nc-old"><div class="field"><label for="nc-c">ابحث بالاسم أو رقم الهاتف *</label><input id="nc-c" name="custq" list="dl-cust" autocomplete="off" data-input="ncCust" value="${pre?esc(pre.name+' — '+pre.phone):''}" placeholder="ابدأ بالكتابة..."><span class="help" id="nc-hint"></span></div></div>
+  <div id="nc-new" class="hide"><div class="fg">${F.t('nname','اسم العميل *')}${F.t('nphone','رقم الهاتف *','','inputmode="tel"')}${F.s('ntype','نوع العميل',CTYPES)}</div></div></div>
+ <div class="fsec"><h4>الخدمة والتنفيذ</h4><div class="fg">${F.s('service','نوع الخدمة *',DB.settings.services.map(s=>s.n),svc.n,'data-change="svc"')}${can('price.view')?F.n('price','سعر الخدمة (ج.م) *',svc.p,'required'):'<input type="hidden" name="price" value="0">'}${F.s('execType','نوع التنفيذ',EXEC)}${F.s('responsibleId','المسؤول عن التنفيذ',empOpts(),ME.id)}${F.s('followerId','الموظف المتابع',empOpts(),ME.id)}</div>
+  <div class="fg">${F.d('openDate','تاريخ فتح الملف',t)}${F.d('followDate','موعد المتابعة',addDays(t,1))}${F.d('expectedDate','تاريخ التسليم المتوقع',addDays(t,7))}</div>${F.t('nextStep','الخطوة القادمة','مراجعة المستندات')}</div>
+ ${can('receipts')?`<div class="fsec"><h4>دفعة مقدمة (اختياري)</h4><div class="fg">${F.n('advance','المبلغ المدفوع الآن','')}${F.s('payMethod','طريقة الدفع',PAYM)}</div></div>`:''}
+ ${F.a('notes','ملاحظات','')}<div class="formerr" role="alert"></div><div class="btns"><button class="btn primary" type="submit">حفظ وفتح الملف</button><button class="btn" type="reset" data-act="resetNc">مسح</button></div></form>`};
+VIEWS.newcase_mount=()=>{const c=S.newCust&&cust(S.newCust);S.newCust='';if(c)INP.ncCust(c.name+' — '+c.phone)};
+INP.ncCust=v=>{const h=$('#nc-hint');if(!h)return;const c=resolveCust(v);if(c){const n=liveCases().filter(x=>x.customerId===c.id).length;h.textContent=`✓ ${c.name} (${c.code}) — لديه ${n} ملف سابق`;h.style.color='var(--good)'}else{h.textContent=v?'لم يتم العثور على عميل بهذا الاسم. اختر من القائمة أو انتقل إلى «عميل جديد».':'';h.style.color='var(--muted)'}};
+ACT.custMode=(d,b)=>{const f=b.closest('form');f.elements.mode.value=d.m;$$('.seg button',f).forEach(x=>x.classList.toggle('on',x===b));$('#nc-old').classList.toggle('hide',d.m!=='old');$('#nc-new').classList.toggle('hide',d.m!=='new')};
+CHG.svc=(v,t)=>{const s=DB.settings.services.find(x=>x.n===v),f=t.closest('form');if(s&&f.elements.price&&f.elements.price.type!=='hidden')f.elements.price.value=s.p};
+ACT.resetNc=()=>setTimeout(()=>{$('#nc-hint').textContent=''},0);
+FORMS.newcase=(d,f)=>{if(!can('cases.edit'))return;let c;
+ if(d.mode==='new'){const r=addCustomer({name:d.nname,phone:d.nphone,type:d.ntype,force:d.nforce});if(r.err){const e=$('.formerr',f);e.innerHTML=esc(r.err)+(r.dup?` <button type="button" class="btn sm" data-act="useCust" data-id="${r.dup.id}">استخدام هذا العميل</button>`:'');return}
+  if(r.warn){ferr(f,r.warn+' اضغط حفظ مرة أخرى للمتابعة.');let h=f.elements.nforce;if(!h){h=document.createElement('input');h.type='hidden';h.name='nforce';f.appendChild(h)}h.value='1';return}c=r.customer}
+ else{c=resolveCust(d.custq);if(!c)return ferr(f,'اختر عميلاً من القائمة، أو انتقل إلى «عميل جديد».')}
+ if(c.tax&&!can('taxclients.edit'))return ferr(f,'ليس لديك صلاحية على عملاء الإقرارات الضريبية');const r=addCase({...d,customerId:c.id});if(r.err)return ferr(f,r.err);
+ if(can('receipts')&&numIn(d.advance)>0){const p=addReceipt({caseId:r.case.id,amount:d.advance,method:d.payMethod});if(p.err)toast('تم فتح الملف لكن تعذر تسجيل الدفعة: '+p.err,'bad')}
+ refresh();toast(`تم فتح الملف ${r.case.no}`,'good');f.reset();ACT.custMode({m:'old'},$('.seg button',f));ACT.openCase({id:r.case.id})};
+ACT.useCust=d=>{S.newCust=d.id;const f=$('form[data-form=newcase]');ACT.custMode({m:'old'},$('.seg button',f));const c=cust(d.id);f.elements.custq.value=c.name+' — '+c.phone;INP.ncCust(f.elements.custq.value);ferr(f,'')};
+/* ================= تفاصيل الملف ================= */
+function caseBody(id){const c=kase(id);if(!c||c.deleted)return empty('الملف غير موجود');const cu=cust(c.customerId),pv=can('price.view'),cv=can('cost.view');
+ const recs=DB.receipts.filter(r=>r.caseId===id),exps=DB.expenses.filter(e=>e.caseId===id),docs=DB.docs.filter(d=>d.caseId===id&&!d.deleted),tks=DB.tasks.filter(t=>t.caseId===id&&!t.deleted);
+ const ev=[...c.history.map(h=>({ts:h.ts,t:h.from?`تغيير الحالة: ${STM[h.from]?.n} ← <b>${STM[h.status].n}</b>${h.note?' — '+esc(h.note):''}`:'فتح الملف',by:h.by})),
+  ...c.follows.map(x=>({ts:x.ts,k:'fol',t:`متابعة: <b>${esc(x.result)}</b>${x.note?' — '+esc(x.note):''}${x.date?` · الموعد القادم ${fmtD(x.date)}`:''}`,by:x.by})),
+  ...(pv?recs.map(r=>({ts:r.ts,k:'pay',t:`تحصيل ${money(r.amount)} (${r.method}) — سند ${r.no}${r.void?' <span class="pill bad">ملغى</span>':''}`,by:r.by})):[]),
+  ...(cv?exps.map(e=>({ts:e.ts,k:'exp',t:`مصروف ${money(e.amount)} — ${esc(e.note||e.category)}${e.void?' <span class="pill bad">ملغى</span>':''}`,by:e.by})):[]),
+  ...docs.map(d=>({ts:d.ts,t:`رفع مستند: ${esc(d.name)}`,by:d.by}))].sort(by(e=>e.ts,-1));
+ return `<div style="display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap;align-items:center"><div>${pill(c)} ${lateTag(c)}</div>
+  ${can('cases.update')&&!taxLocked(c)?`<div class="field" style="min-width:min(100%,260px)"><label for="st-${c.id}">تغيير الحالة</label><select id="st-${c.id}" data-change="setStatus" data-id="${c.id}">${opt(stOpts,c.status)}</select></div>`:''}</div>
+ <div class="sumbox"><b>ملخص آلي</b>${esc(summarize(c))}</div>
+ <div class="btns">${can('cases.update')&&!taxLocked(c)?`<button class="btn primary" data-act="follow" data-id="${c.id}">${ic('clock')} تسجيل متابعة</button>`:''}${can('receipts')&&remain(c)>0?`<button class="btn" data-act="newRec" data-id="${c.id}">${ic('down')} تسجيل دفعة</button>`:''}${can('expenses')?`<button class="btn" data-act="newExp" data-id="${c.id}">${ic('up')} مصروف تنفيذ</button>`:''}${can('tasks')?`<button class="btn" data-act="newTask" data-id="${c.id}">${ic('tasks')} مهمة</button>`:''}${can('docs')?`<button class="btn" data-act="newDoc" data-id="${c.id}">${ic('folder')} رفع مستند</button>`:''}${can('cases.edit')&&!taxLocked(c)?`<button class="btn" data-act="editCase" data-id="${c.id}">${ic('edit')} تعديل</button>`:''}${isAdm()?`<button class="btn danger" data-act="delCase" data-id="${c.id}">${ic('trash')} حذف</button>`:''}</div>
+ <div class="kv"><div><small>العميل</small><b><a href="#" data-act="openCust" data-id="${c.customerId}" onclick="return false">${esc(cu?.name)}</a></b></div><div><small>الهاتف</small><b class="num">${esc(cu?.phone)}</b></div><div><small>الخدمة</small><b>${esc(c.service)}</b></div><div><small>المسؤول عن التنفيذ</small><b>${esc(uName(c.responsibleId))}</b></div><div><small>الموظف المتابع</small><b>${esc(uName(c.followerId))}</b></div><div><small>نوع التنفيذ</small><b>${esc(c.execType)}</b></div><div><small>تاريخ الفتح</small><b>${fmtD(c.openDate)}</b></div><div><small>الخطوة القادمة</small><b>${esc(c.nextStep||'—')}</b></div><div><small>موعد المتابعة</small><b>${fmtD(c.followDate)}</b></div><div><small>التسليم المتوقع</small><b>${fmtD(c.expectedDate)}</b></div><div><small>تاريخ الإغلاق</small><b>${fmtD(c.closeDate)}</b></div>${pv?`<div><small>طريقة الدفع</small><b>${esc(c.payMethod)}</b></div>`:''}${c.notes?`<div style="grid-column:1/-1"><small>ملاحظات</small><b>${esc(c.notes)}</b></div>`:''}</div>
+ ${pv?`<div class="fin"><div><small>سعر الخدمة</small><b>${nf(c.price)}</b></div><div><small>المدفوع</small><b style="color:var(--good)">${nf(paid(c))}</b></div><div><small>المتبقي</small><b style="color:${remain(c)?'var(--warn)':'inherit'}">${nf(remain(c))}</b></div>${cv?`<div><small>تكلفة التنفيذ</small><b>${nf(costOf(c))}</b></div><div><small>الربح</small><b style="color:${profit(c)<0?'var(--bad)':'var(--good)'}">${nf(profit(c))}</b></div>`:''}</div>
+  ${recs.length&&can('receipts')?`<div><h4 style="margin-bottom:8px">سندات القبض</h4><div class="list">${recs.map(r=>`<div class="row" style="grid-template-columns:1fr auto" data-act="viewRec" data-id="${r.id}" tabindex="0"><div><div class="t"><span class="no">${r.no}</span>${money(r.amount)} ${r.void?'<span class="pill bad">ملغى</span>':''}</div><div class="sub">${fmtD(r.date)} · ${esc(r.method)} · ${esc(uName(r.by))}</div></div><div class="end">${ic('print')}</div></div>`).join('')}</div></div>`:''}`:''}
+ ${docs.length?`<div><h4 style="margin-bottom:8px">المستندات</h4><div class="list">${docs.map(d=>docRow(d)).join('')}</div></div>`:''}
+ ${tks.length?`<div><h4 style="margin-bottom:8px">المهام المرتبطة</h4><div class="list">${tks.map(t=>taskRow(t)).join('')}</div></div>`:''}
+ <div><h4 style="margin-bottom:8px">سجل الملف</h4><div class="tl">${ev.map(e=>`<div class="ev"><span class="dot ${e.k||''}"></span><div>${e.t}<br><small>${esc(uName(e.by))} · ${fmtDT(e.ts)}</small></div></div>`).join('')}</div></div>`}
+ACT.openCase=d=>{const c0=kase(d.id);if(c0&&!taxOK(cust(c0.customerId)))return toast('لا تملك صلاحية عرض هذا الملف','bad');if(c0)log('عرض','ملف',d.id,`فتح الملف ${c0.no} — ${cName(c0.customerId)} (${c0.service})`);return pushModal({title:()=>{const c=kase(d.id);return c?`ملف ${c.no} — ${cName(c.customerId)}`:'ملف'},wide:true,live:true,noFocus:true,body:()=>caseBody(d.id)})};
+CHG.setStatus=(v,t)=>{if(!can('cases.update'))return;if(taxLocked(kase(t.dataset.id)))return;const r=setStatus(t.dataset.id,v,'');if(r.err){toast(r.err,'bad');refresh();return}refresh();toast('تم تغيير الحالة وتسجيلها','good')};
+ACT.delCase=d=>ask('سيُنقل الملف إلى سلة المحذوفات ويمكن للمدير استعادته من الإعدادات.','حذف الملف',()=>{const r=delEntity('case',d.id);if(r.err)return toast(r.err,'bad');closeAll();refresh();toast('تم حذف الملف')},true);
+ACT.editCase=d=>{if(!can('cases.edit'))return;const c=kase(d.id);if(taxLocked(c))return toast('ليس لديك صلاحية على ملفات عملاء الإقرارات الضريبية','bad');pushModal({title:'تعديل الملف '+c.no,body:()=>`<form data-form="editCase" data-id="${c.id}"><div class="fg">${F.s('service','نوع الخدمة',DB.settings.services.map(s=>s.n).concat(DB.settings.services.some(s=>s.n===c.service)?[]:[c.service]),c.service)}${can('price.view')?F.n('price','سعر الخدمة',c.price,'required'):'<input type="hidden" name="price" value="'+c.price+'">'}${F.s('execType','نوع التنفيذ',EXEC,c.execType)}${F.s('responsibleId','المسؤول عن التنفيذ',empOpts(),c.responsibleId)}${F.s('followerId','الموظف المتابع',empOpts(),c.followerId)}${F.s('payMethod','طريقة الدفع',PAYM,c.payMethod)}${F.d('followDate','موعد المتابعة',c.followDate)}${F.d('expectedDate','التسليم المتوقع',c.expectedDate)}</div>${F.t('nextStep','الخطوة القادمة',c.nextStep)}${F.a('notes','ملاحظات',c.notes)}<div class="formerr"></div><div class="btns"><button class="btn primary" type="submit">حفظ</button><button class="btn" type="button" data-act="closeModal">إلغاء</button></div></form>`})};
+FORMS.editCase=(d,f)=>{if(taxLocked(kase(f.dataset.id)))return;const r=editCase(f.dataset.id,d);if(r.err)return ferr(f,r.err);closeModal();refresh();toast('تم حفظ التعديلات','good')};
+/* متابعة */
+ACT.follow=d=>{const c=kase(d.id);if(taxLocked(c))return toast('ليس لديك صلاحية على ملفات عملاء الإقرارات الضريبية','bad');pushModal({title:'تسجيل متابعة — '+c.no,body:()=>`<form data-form="follow" data-id="${c.id}"><div class="sub muted" style="margin-top:-6px">${esc(cName(c.customerId))} · <span class="num">${esc(cust(c.customerId)?.phone)}</span></div>${F.s('result','نتيجة المتابعة *',RESULTS)}${F.a('note','ملاحظات','')}<div class="fg">${F.d('followDate','موعد المتابعة التالي',addDays(T(),1),`min="${T()}"`)}${F.t('nextStep','الخطوة القادمة',c.nextStep)}</div><div class="formerr"></div><button class="btn primary" type="submit">حفظ المتابعة</button></form>`})};
+FORMS.follow=(d,f)=>{if(!can('followups')&&!can('cases.update'))return;if(taxLocked(kase(f.dataset.id)))return;const r=addFollow(f.dataset.id,d);if(r.err)return ferr(f,r.err);closeModal();refresh();toast('تم تسجيل المتابعة وتحديث الموعد','good')};
+ACT.snooze=d=>{const c=kase(d.id);if(taxLocked(c))return toast('ليس لديك صلاحية على ملفات عملاء الإقرارات الضريبية','bad');const r=addFollow(c.id,{result:'تأجيل بطلب العميل',note:'إعادة جدولة تلقائية +يوم',followDate:addDays(T(),1)});if(r.err)return toast(r.err,'bad');refresh();toast('تم تأجيل المتابعة إلى الغد','good')};
+/* تحصيل */
+ACT.newRec=d=>{if(!can('receipts'))return;const c=d.id?kase(d.id):null;pushModal({title:'تسجيل تحصيل (سند قبض)',body:()=>`<form data-form="rec">${caseDL(x=>remain(x)>0)}${c?`<input type="hidden" name="caseq" value="${esc(c.no)}"><div class="sumbox"><b>الملف</b>${esc(c.no+' — '+cName(c.customerId)+' — '+c.service)}<br>المتبقي: <span class="num">${money(remain(c))}</span></div>`:`<div class="field"><label for="rcq">الملف *</label><input id="rcq" name="caseq" list="dl-case" autocomplete="off" required placeholder="رقم الملف أو اسم العميل"></div>`}
+ <div class="fg">${F.n('amount','المبلغ (ج.م) *',c?remain(c):'','required')}${F.d('date','تاريخ التحصيل',T(),`max="${T()}"`)}${F.s('method','طريقة التحصيل',PAYM,c?.payMethod||PAYM[0])}</div>${F.t('note','ملاحظة','')}<div class="formerr"></div><button class="btn primary" type="submit">حفظ وإصدار السند</button></form>`})};
+FORMS.rec=(d,f)=>{if(!can('receipts'))return;const c=resolveCase(d.caseq);if(!c)return ferr(f,'اختر ملفاً من القائمة');const r=addReceipt({...d,caseId:c.id});if(r.err)return ferr(f,r.err);closeModal();refresh();toast(`تم إصدار السند ${r.receipt.no}`,'good');ACT.viewRec({id:r.receipt.id})};
+function rcptHTML(r){const c=kase(r.caseId);return `<div class="rcpt"><h2>سند قبض</h2><div style="text-align:center;margin-bottom:12px">${esc(DB.settings.office)}</div><div class="r"><span>رقم السند</span><b>${r.no}</b></div><div class="r"><span>التاريخ</span><b>${fmtD(r.date)}</b></div><div class="r"><span>استلمنا من السيد/ة</span><b>${esc(cName(r.customerId))}</b></div><div class="r"><span>مبلغ وقدره</span><b>${money(r.amount)}</b></div><div class="r"><span>طريقة الدفع</span><b>${esc(r.method)}</b></div><div class="r"><span>وذلك عن</span><b>${esc(c?.service||'')} — ملف ${esc(c?.no||'')}</b></div>${c?`<div class="r"><span>المتبقي على الملف</span><b>${money(remain(c))}</b></div>`:''}${r.note?`<div class="r"><span>ملاحظة</span><b>${esc(r.note)}</b></div>`:''}${r.void?`<div class="r" style="color:#b00"><span>السند ملغى</span><b>${esc(r.voidReason||'')}</b></div>`:''}<div class="sig"><span>المستلم: ${esc(uName(r.by))}</span><span>توقيع العميل: ........</span></div></div>`}
+ACT.viewRec=d=>{const r=DB.receipts.find(x=>x.id===d.id);log('عرض','سند قبض',r.id,`عرض السند ${r.no} (${cName(r.customerId)})`);pushModal({title:'سند قبض '+r.no,live:true,noFocus:true,body:()=>{const r=DB.receipts.find(x=>x.id===d.id);return `${rcptHTML(r)}<div class="btns"><button class="btn primary" data-act="printEl" data-src="rcpt">${ic('print')} طباعة</button>${isAdm()&&!r.void?`<button class="btn danger" data-act="voidRec" data-id="${r.id}">إلغاء السند</button>`:''}</div>`}})};
+ACT.voidRec=d=>pushModal({title:'إلغاء سند القبض',body:()=>`<form data-form="voidRec" data-id="${d.id}"><p class="muted" style="margin:0">إلغاء السند يعيد المبلغ إلى المتبقي على الملف ويُسجّل في سجل العمليات.</p>${F.t('reason','سبب الإلغاء *','','required')}<div class="formerr"></div><button class="btn danger" type="submit">تأكيد الإلغاء</button></form>`});
+FORMS.voidRec=(d,f)=>{if(!isAdm())return;const r=voidRec(f.dataset.id,d.reason);if(r.err)return ferr(f,r.err);closeModal();refresh();toast('تم إلغاء السند')};
+function printHTML(html){const p=$('#printArea');p.innerHTML=html;try{window.print()}catch(e){}toast('إن لم تظهر نافذة الطباعة فافتح التطبيق كملف مستقل في المتصفح ثم اطبع.')}
+ACT.printEl=d=>{log('طباعة','سند قبض','','طباعة سند قبض');const el=$('.rcpt',MODALS[MODALS.length-1]?.el);if(el)printHTML(el.outerHTML)};
+/* مصروف */
+ACT.newExp=d=>{if(!can('expenses'))return;const c=d.id?kase(d.id):null;const emp=d.emp||'';const cat=d.cat||(c?'تنفيذ ملفات':EXPC[1]);pushModal({title:'تسجيل مصروف',body:()=>`<form data-form="exp">${caseDL()}<div class="fg">${F.s('category','نوع المصروف',EXPC,cat,'data-change="expCat"')}${F.n('amount','المبلغ (ج.م) *',d.amt||'','required')}${F.d('date','التاريخ',T(),`max="${T()}"`)}</div>
+ <div id="ex-case" class="${cat==='تنفيذ ملفات'?'':'hide'}">${c?`<input type="hidden" name="caseq" value="${esc(c.no)}"><div class="sumbox"><b>الملف</b>${esc(c.no+' — '+cName(c.customerId))}</div>`:`<div class="field"><label for="exq">الملف المرتبط ${'*'}</label><input id="exq" name="caseq" list="dl-case" autocomplete="off" placeholder="رقم الملف أو اسم العميل"></div>`}</div>
+ <div id="ex-emp" class="${cat==='أجور موظفين'?'':'hide'}">${F.s('employeeId','الموظف',empOpts(1),emp)}</div>${F.t('note','ملاحظة',d.note||'')}<div class="formerr"></div><button class="btn primary" type="submit">حفظ المصروف</button></form>`})};
+CHG.expCat=(v)=>{$('#ex-case').classList.toggle('hide',v!=='تنفيذ ملفات');$('#ex-emp').classList.toggle('hide',v!=='أجور موظفين')};
+FORMS.exp=(d,f)=>{if(!can('expenses'))return;let caseId='';if(d.category==='تنفيذ ملفات'||(d.caseq&&d.caseq.trim())){const c=resolveCase(d.caseq);if(!c&&d.category==='تنفيذ ملفات')return ferr(f,'اختر الملف المرتبط بمصروف التنفيذ');caseId=c?c.id:''}
+ const r=addExpense({...d,caseId});if(r.err)return ferr(f,r.err);closeModal();refresh();toast('تم تسجيل المصروف','good')};
+/* مهام */
+function taskRow(t){const late=!t.done&&t.due<T();const pr={h:['h','عالية'],m:['m','متوسطة'],l:['l','منخفضة']}[t.priority];return `<div class="chk ${t.done?'done':''}"><input type="checkbox" id="tk-${t.id}" data-change="taskDone" data-id="${t.id}" ${t.done?'checked':''} aria-label="تم"><label class="tt" for="tk-${t.id}"><b>${esc(t.title)}</b><div class="sub muted sm">${esc(uName(t.assigneeId))} · موعد ${fmtD(t.due)}${t.caseId?` · <a href="#" data-act="openCase" data-id="${t.caseId}" onclick="return false">${esc(kase(t.caseId)?.no||'')}</a>`:''}</div></label><span class="prio ${pr[0]}">${pr[1]}</span>${late?'<span class="pill bad">متأخرة</span>':''}${isAdm()?`<button class="icon-btn" style="width:30px;height:30px" data-act="delTask" data-id="${t.id}" aria-label="حذف">${ic('trash')}</button>`:''}</div>`}
+CHG.taskDone=(v,t)=>{const k=DB.tasks.find(x=>x.id===t.dataset.id);if(!(k.assigneeId===ME.id||k.createdBy===ME.id||isAdm())){toast('لا تملك صلاحية تعديل هذه المهمة','bad');refresh();return}k.done=t.checked;k.doneAt=t.checked?nowISO():'';log(k.done?'إنجاز':'إعادة فتح','مهمة',k.id,`${k.done?'إنجاز':'إعادة فتح'} المهمة ${k.title}`);save();refresh()};
+ACT.delTask=d=>{const r=delEntity('task',d.id);if(r.err)return toast(r.err,'bad');refresh();toast('تم حذف المهمة')};
+ACT.newTask=d=>{if(!can('tasks'))return;const c=d.id?kase(d.id):null;pushModal({title:'مهمة جديدة',body:()=>`<form data-form="task">${custDL()}${caseDL()}${F.t('title','عنوان المهمة *','','required')}<div class="fg">${can('cases.all')&&ME.role!=='accountant'||isAdm()?F.s('assigneeId','المسند إليه',empOpts(),ME.id):`<input type="hidden" name="assigneeId" value="${ME.id}">`}${F.s('priority','الأولوية',[['h','عالية'],['m','متوسطة'],['l','منخفضة']],'m')}${F.d('due','موعد التسليم',T())}</div>
+ ${c?`<input type="hidden" name="caseq" value="${esc(c.no)}"><div class="sumbox"><b>مرتبطة بالملف</b>${esc(c.no+' — '+cName(c.customerId))}</div>`:`<div class="field"><label for="tkq">ربط بملف (اختياري)</label><input id="tkq" name="caseq" list="dl-case" autocomplete="off" placeholder="رقم الملف أو اسم العميل"></div>`}<div class="formerr"></div><button class="btn primary" type="submit">إضافة</button></form>`})};
+FORMS.task=(d,f)=>{const c=resolveCase(d.caseq);const r=addTask({...d,caseId:c?c.id:'',customerId:c?c.customerId:''});if(r.err)return ferr(f,r.err);closeModal();refresh();toast('تمت إضافة المهمة','good')};
+/* مستندات */
+function fsize(n){return n>1048576?(n/1048576).toFixed(1)+' MB':Math.max(1,Math.round(n/1024))+' KB'}
+function docRow(d){return `<div class="row" style="grid-template-columns:minmax(0,1.5fr) minmax(0,1fr) auto" data-act="viewDoc" data-id="${d.id}" tabindex="0"><div><div class="t">${esc(d.name)}</div><div class="sub">${esc(d.cat)} · ${fsize(d.size)}</div></div><div class="sub">${d.customerId?esc(cName(d.customerId)):''}${d.caseId?' · '+esc(kase(d.caseId)?.no||''):''}<br>${fmtD(d.date)} · ${esc(uName(d.by))}</div><div class="end">${ic('folder')}</div></div>`}
+ACT.newDoc=d=>{if(!can('docs'))return;const c=d.id?kase(d.id):null;pushModal({title:'رفع مستند',body:()=>`<form data-form="doc">${custDL()}${caseDL()}<div class="field"><label for="df">الملفات (صور، PDF، مستندات) *</label><input id="df" type="file" name="files" multiple required accept="image/*,.pdf,.doc,.docx,.xls,.xlsx,.txt"><span class="help">الحد الأقصى 6 ميغابايت للملف الواحد.</span></div>${F.s('cat','التصنيف',DOCC)}
+ ${c?`<input type="hidden" name="caseq" value="${esc(c.no)}"><div class="sumbox"><b>مرتبط بالملف</b>${esc(c.no+' — '+cName(c.customerId))}</div>`:`<div class="field"><label for="dq">ربط بملف</label><input id="dq" name="caseq" list="dl-case" autocomplete="off" placeholder="رقم الملف (اختياري)"></div><div class="field"><label for="dc">أو ربط بعميل</label><input id="dc" name="custq" list="dl-cust" autocomplete="off" placeholder="اسم العميل (اختياري)"></div>`}<div class="formerr"></div><button class="btn primary" type="submit">رفع</button></form>`})};
+FORMS.doc=async(d,f)=>{const files=[...f.elements.files.files];if(!files.length)return ferr(f,'اختر ملفاً');const c=resolveCase(d.caseq),cu=c?cust(c.customerId):resolveCust(d.custq);if(!c&&!cu)return ferr(f,'اربط المستند بملف أو بعميل');
+ if(c&&!visCases().some(x=>x.id===c.id))return ferr(f,'لا تملك صلاحية على هذا الملف');
+ const r=await addDocs(files,{cat:d.cat,caseId:c?c.id:'',customerId:cu?cu.id:''});if(r.err)return ferr(f,r.err);closeModal();refresh();toast(`تم رفع ${r.n} مستند`,'good')};
+ACT.viewDoc=async d=>{const doc=DB.docs.find(x=>x.id===d.id);log('عرض','مستند',doc.id,`عرض المستند ${doc.name}`);let blob;try{blob=await IDB.get(d.id)}catch(e){}
+ let url='';if(blob){try{url=URL.createObjectURL(blob)}catch(e){}}
+ const isImg=/^image\//.test(doc.mime),isPdf=doc.mime==='application/pdf';
+ pushModal({title:doc.name,wide:true,noFocus:true,onClose:()=>url&&URL.revokeObjectURL(url),body:()=>`<div class="kv"><div><small>التصنيف</small><b>${esc(doc.cat)}</b></div><div><small>العميل</small><b>${esc(cName(doc.customerId))}</b></div><div><small>الملف</small><b>${esc(kase(doc.caseId)?.no||'—')}</b></div><div><small>تاريخ الرفع</small><b>${fmtD(doc.date)}</b></div><div><small>رفعه</small><b>${esc(uName(doc.by))}</b></div><div><small>الحجم</small><b>${fsize(doc.size)}</b></div></div>
+ ${!blob?'<div class="banner warn">محتوى هذا المستند غير متوفر في هذا المتصفح (قد يكون رُفع من جهاز آخر).</div>':isImg?`<img src="${url}" alt="${esc(doc.name)}" style="border-radius:10px;border:1px solid var(--line)">`:isPdf?`<iframe src="${url}" title="${esc(doc.name)}" style="width:100%;height:60vh;border:1px solid var(--line);border-radius:10px"></iframe><a class="btn" href="${url}" target="_blank" rel="noopener">فتح في نافذة جديدة</a>`:`<a class="btn" href="${url}" target="_blank" rel="noopener" download="${esc(doc.name)}">${ic('dl')} فتح / تنزيل</a>`}
+ ${isAdm()?`<div><button class="btn danger" data-act="delDoc" data-id="${doc.id}">${ic('trash')} حذف المستند</button></div>`:''}`})};
+ACT.delDoc=d=>ask('سيُنقل المستند إلى سلة المحذوفات.','حذف',()=>{const r=delEntity('doc',d.id);if(r.err)return toast(r.err,'bad');closeAll();refresh();toast('تم حذف المستند')},true);
+
+/* ================= المتابعة ================= */
+const FU=[['today','متابعة اليوم'],['up','المتابعات القادمة'],['late','المتابعات المتأخرة'],['stalled','الملفات المتوقفة'],['client','تنتظر العميل'],['gov','تنتظر جهة حكومية'],['stale','لم تُحدّث منذ فترة']];
+function fuList(k){const t=T(),a=visCases().filter(c=>G(c).g!=='done');
+ return k==='today'?a.filter(c=>c.followDate===t):k==='up'?a.filter(c=>c.followDate>t).sort(by(c=>c.followDate)):k==='late'?a.filter(c=>c.followDate&&c.followDate<t).sort(by(c=>c.followDate)):k==='stalled'?a.filter(c=>c.status==='stalled'):k==='client'?a.filter(c=>c.status==='client'||c.status==='docs'):k==='gov'?a.filter(c=>c.status==='gov'):a.filter(c=>staleDays(c)>=DB.settings.staleDays).sort(by(c=>-staleDays(c)))}
+VIEWS.followups=()=>`<div class="page-h"><h1>مركز المتابعة</h1><span class="muted sm">حدّ «لم تُحدّث» = ${DB.settings.staleDays} أيام</span></div>
+ <div class="tabs" role="tablist">${FU.map(([k,l])=>`<button class="tab ${S.fu===k?'on':''}" data-act="fuTab" data-k="${k}" role="tab">${l} <span class="c">${fuList(k).length}</span></button>`).join('')}</div><div class="list" id="vlist">${LISTS.followups()}</div>`;
+ACT.fuTab=d=>{S.fu=d.k;refresh()};
+LISTS.followups=()=>{const a=fuList(S.fu);if(!a.length)return empty('لا توجد ملفات في هذه القائمة','أحسنت، لا شيء يحتاج متابعة هنا.');
+ return a.map(c=>caseRow(c,`${can('cases.update')?`<button class="btn sm primary" data-act="follow" data-id="${c.id}">تسجيل نتيجة / إعادة جدولة</button><button class="btn sm" data-act="snooze" data-id="${c.id}">غداً</button>`:''}${S.fu==='stale'?`<span class="pill">بدون تحديث ${staleDays(c)} يوم</span>`:''}`)).join('')};
+VIEWS.overdue=()=>{const a=visCases().filter(isLate).sort(by(c=>-priority(c)));
+ return `<div class="page-h"><h1>الملفات المتأخرة</h1><span class="muted sm">${a.length} ملف · مرتبة بالأولوية</span></div>${a.length?`<div class="list">${a.map(c=>caseRow(c,`<span class="sub" style="color:var(--bad)">${esc(whyText(c))}</span>${can('cases.update')?`<button class="btn sm primary" data-act="follow" data-id="${c.id}">تسجيل متابعة</button>`:''}`)).join('')}</div>`:empty('لا توجد ملفات متأخرة','كل الملفات ضمن الجدول المحدد.')}`};
+/* المهام */
+VIEWS.tasks=()=>{const tabs=[['today','مهام اليوم'],['late','المتأخرة'],['done','المكتملة'],['all','الكل']];
+ return `<div class="page-h"><h1>المهام</h1>${can('tasks')?btnAdd('newTask','مهمة جديدة'):''}</div><div class="filters"><div class="tabs" style="flex:1">${tabs.map(([k,l])=>`<button class="tab ${S.tk.tab===k?'on':''}" data-act="tkTab" data-k="${k}">${l} <span class="c">${tkList(k).length}</span></button>`).join('')}</div>
+ ${isAdm()?`<div class="field" style="max-width:200px;flex:none"><label for="tke" class="sm muted">الموظف</label><select id="tke" data-change="rflt" data-s="tk.emp"><option value="">كل الموظفين</option>${opt(empOpts(1),S.tk.emp)}</select></div>`:''}</div><div class="list" id="vlist">${LISTS.tasks()}</div>`};
+function tkList(k){const t=T();let a=DB.tasks.filter(x=>!x.deleted);if(!isAdm())a=a.filter(x=>x.assigneeId===ME.id||x.createdBy===ME.id);else if(S.tk.emp)a=a.filter(x=>x.assigneeId===S.tk.emp);
+ a=k==='today'?a.filter(x=>!x.done&&x.due===t):k==='late'?a.filter(x=>!x.done&&x.due<t):k==='done'?a.filter(x=>x.done):a;return a.sort(by(x=>x.done?1:0)||by(x=>x.due))}
+ACT.tkTab=d=>{S.tk.tab=d.k;refresh()};
+LISTS.tasks=()=>{const a=tkList(S.tk.tab).sort((x,y)=>(x.done-y.done)||(x.due<y.due?-1:1)||({h:0,m:1,l:2}[x.priority]-{h:0,m:1,l:2}[y.priority]));return a.length?a.map(taskRow).join(''):empty('لا توجد مهام هنا')};
+/* التحصيلات */
+VIEWS.receipts=()=>`<div class="page-h"><h1>التحصيلات</h1>${btnAdd('newRec','تسجيل تحصيل')}</div>
+ <div class="card flat"><div class="filters"><div class="field" style="flex:2"><label for="rq">بحث</label><input id="rq" type="search" data-input="flt" data-s="rc.q" value="${esc(S.rc.q)}" placeholder="رقم السند أو العميل أو رقم الملف"></div><div class="field"><label for="rf">من</label><input id="rf" type="date" data-change="flt" data-s="rc.from" value="${S.rc.from}"></div><div class="field"><label for="rt">إلى</label><input id="rt" type="date" data-change="flt" data-s="rc.to" value="${S.rc.to}"></div></div></div><div class="list" id="vlist">${LISTS.receipts()}</div>`;
+LISTS.receipts=()=>{const q=normName(S.rc.q);const vis=new Set(visCases().map(c=>c.id));const a=DB.receipts.filter(r=>vis.has(r.caseId)&&(!S.rc.from||r.date>=S.rc.from)&&(!S.rc.to||r.date<=S.rc.to)&&(!q||r.no.toLowerCase().includes(q)||normName(cName(r.customerId)).includes(q)||(kase(r.caseId)?.no||'').toLowerCase().includes(q))).sort(by(r=>r.date+r.ts,-1));
+ if(!a.length)return empty('لا توجد تحصيلات','سجّل أول دفعة من الزر أعلاه.');const ok=a.filter(r=>!r.void);
+ return `<div class="muted sm">${ok.length} سند · الإجمالي <b class="num">${money(sum(ok,r=>r.amount))}</b></div>`+a.map(r=>`<div class="row" data-act="viewRec" data-id="${r.id}" tabindex="0"><div><div class="t"><span class="no">${r.no}</span>${esc(cName(r.customerId))} ${r.void?'<span class="pill bad">ملغى</span>':''}</div><div class="sub">ملف ${esc(kase(r.caseId)?.no||'')} · ${esc(kase(r.caseId)?.service||'')}</div></div><div class="sub">${fmtD(r.date)}</div><div class="sub">${esc(r.method)} · ${esc(uName(r.by))}</div><div class="end" style="${r.void?'text-decoration:line-through;opacity:.6':''}">${nf(r.amount)}</div></div>`).join('')};
+/* المصروفات */
+VIEWS.expenses=()=>`<div class="page-h"><h1>المصروفات</h1>${btnAdd('newExp','تسجيل مصروف')}</div>
+ <div class="card flat"><div class="filters"><div class="field"><label for="ec">النوع</label><select id="ec" data-change="flt" data-s="ex.cat"><option value="">الكل</option>${opt(EXPC,S.ex.cat)}</select></div><div class="field"><label for="ef">من</label><input id="ef" type="date" data-change="flt" data-s="ex.from" value="${S.ex.from}"></div><div class="field"><label for="et">إلى</label><input id="et" type="date" data-change="flt" data-s="ex.to" value="${S.ex.to}"></div></div></div><div class="list" id="vlist">${LISTS.expenses()}</div>`;
+LISTS.expenses=()=>{const a=DB.expenses.filter(e=>(!S.ex.cat||e.category===S.ex.cat)&&(!S.ex.from||e.date>=S.ex.from)&&(!S.ex.to||e.date<=S.ex.to)).sort(by(e=>e.date+e.ts,-1));if(!a.length)return empty('لا توجد مصروفات');const ok=a.filter(e=>!e.void);
+ return `<div class="muted sm">${ok.length} مصروف · الإجمالي <b class="num">${money(sum(ok,e=>e.amount))}</b></div>`+a.map(e=>`<div class="row" style="grid-template-columns:minmax(0,1.5fr) minmax(0,1fr) auto"><div><div class="t"><span class="no">${e.no}</span>${esc(e.category)} ${e.void?'<span class="pill bad">ملغى</span>':''}</div><div class="sub">${esc(e.note||'')}${e.caseId?' · ملف '+esc(kase(e.caseId)?.no||''):''}${e.employeeId?' · '+esc(uName(e.employeeId)):''}</div></div><div class="sub">${fmtD(e.date)} · ${esc(uName(e.by))}</div><div class="end" style="${e.void?'text-decoration:line-through;opacity:.6':''}">${nf(e.amount)} ${isAdm()&&!e.void?`<button class="btn sm danger" data-act="voidExp" data-id="${e.id}">إلغاء</button>`:''}</div></div>`).join('')};
+ACT.voidExp=d=>pushModal({title:'إلغاء المصروف',body:()=>`<form data-form="voidExp" data-id="${d.id}">${F.t('reason','سبب الإلغاء *','','required')}<div class="formerr"></div><button class="btn danger" type="submit">تأكيد الإلغاء</button></form>`});
+FORMS.voidExp=(d,f)=>{if(!isAdm())return;const r=voidExp(f.dataset.id,d.reason);if(r.err)return ferr(f,r.err);closeModal();refresh();toast('تم إلغاء المصروف')};
+/* ================= التقارير والحسابات ================= */
+let LASTREP=null;
+const rpRange=()=>{const t=T(),p=S.rp.preset;return p==='today'?[t,t]:p==='week'?[addDays(t,-6),t]:p==='month'?[monthStart(t),monthEnd(t)]:[S.rp.from||'0000-00-00',S.rp.to||'9999-99-99']};
+const tbl=(head,rows,foot)=>`<div class="tbl-wrap"><table><thead><tr>${head.map((h,i)=>`<th class="${i>0&&typeof rows[0]?.[i]==='number'?'n':''}">${h}</th>`).join('')}</tr></thead><tbody>${rows.map(r=>`<tr>${r.map((x,i)=>`<td class="${typeof x==='number'?'n':''}">${typeof x==='number'?nf(x):esc(x)}</td>`).join('')}</tr>`).join('')}</tbody>${foot?`<tfoot><tr>${foot.map(x=>`<td class="${typeof x==='number'?'n':''}">${typeof x==='number'?nf(x):esc(x)}</td>`).join('')}</tr></tfoot>`:''}</table></div>`;
+const RPT=[['sum','الملخص المالي'],['files','تقرير الملفات'],['custs','حسابات العملاء'],['treasury','الخزينة'],['salaries','الموظفون ومستحقاتهم'],['smart','التحليل الذكي']];
+const presetBar=()=>`<div class="filters"><div class="field"><label for="rpp">الفترة</label><select id="rpp" data-change="rflt" data-s="rp.preset">${opt([['today','يومي (اليوم)'],['week','أسبوعي (آخر 7 أيام)'],['month','شهري (الشهر الحالي)'],['custom','فترة مخصصة']],S.rp.preset)}</select></div>${S.rp.preset==='custom'?`<div class="field"><label for="rpf">من</label><input id="rpf" type="date" data-change="rflt" data-s="rp.from" value="${S.rp.from}"></div><div class="field"><label for="rpt">إلى</label><input id="rpt" type="date" data-change="rflt" data-s="rp.to" value="${S.rp.to}"></div>`:''}</div>`;
+const exportBar=()=>`<div class="btns"><button class="btn sm" data-act="exp">${ic('dl')} Excel</button><button class="btn sm" data-act="cpy">${ic('copy')} نسخ</button><button class="btn sm" data-act="prn">${ic('print')} طباعة / PDF</button></div>`;
+VIEWS.reports=()=>{const t=S.rp.tab;let body='';LASTREP=null;
+ if(t==='sum'){const r=rpRange(),f=finStats(r),cats={};f.ex.forEach(e=>cats[e.category]=(cats[e.category]||0)+e.amount);const mx=Math.max(1,...Object.values(cats));const meth={};f.rec.forEach(x=>meth[x.method]=(meth[x.method]||0)+x.amount);
+  const rows=[['قيمة الخدمات (ملفات الفترة)',f.value],['المبالغ المحصّلة',f.collected],['المستحق على العملاء حتى اليوم',f.due],['تكاليف تنفيذ الملفات',f.execCost],['المصروفات التشغيلية',f.opex],['صافي الربح المحاسبي',f.net],['صافي النقد (محصّل − مصروفات)',f.cash],['رصيد الخزينة الحالي',treasury()]];LASTREP={name:'الملخص-المالي',head:['البند','القيمة (ج.م)'],rows};
+  body=`${presetBar()}<p class="muted sm" style="margin:0">الفترة: ${r[0]<'1'?'كل الفترات':fmtD(r[0])+' إلى '+fmtD(r[1])}</p><div class="kpis">${kpi('قيمة الخدمات',money(f.value))}${kpi('المحصّل',money(f.collected),{c:'good'})}${kpi('المستحق',money(f.due),{c:'warn',s:'حتى اليوم'})}${kpi('تكلفة التنفيذ',money(f.execCost))}${kpi('مصروفات تشغيلية',money(f.opex))}${kpi('صافي الربح المحاسبي',money(f.net),{c:f.net<0?'bad':'main'})}${kpi('صافي النقد',money(f.cash),{s:'محصّل − مصروفات'})}${kpi('رصيد الخزينة',money(treasury()))}</div>
+  <div class="cols"><div class="card flat"><h3 style="margin-bottom:10px">المصروفات حسب النوع</h3>${Object.keys(cats).length?Object.entries(cats).sort(by(x=>-x[1])).map(([k,v])=>`<div style="display:grid;grid-template-columns:1fr auto;gap:2px 10px;margin-bottom:8px"><span>${esc(k)}</span><span class="num">${nf(v)}</span><div class="bar brass" style="grid-column:1/-1"><i style="width:${v/mx*100}%"></i></div></div>`).join(''):'<span class="muted">لا مصروفات في الفترة</span>'}</div>
+  <div class="card flat"><h3 style="margin-bottom:10px">التحصيلات حسب الطريقة</h3>${Object.keys(meth).length?tbl(['الطريقة','المبلغ'],Object.entries(meth).map(([k,v])=>[k,num(v)])):'<span class="muted">لا تحصيلات في الفترة</span>'}</div></div>`}
+ else if(t==='files'){const r=rpRange(),R=S.rp;const cs=filterCases({status:R.status,service:R.service,emp:R.emp},liveCases()).filter(c=>inR(c.openDate,r)&&(!R.cust||c.customerId===R.cust)&&taxOK(cust(c.customerId)||{})).sort(by(c=>c.openDate,-1));const cv=can('cost.view');
+  const head=['رقم الملف','العميل','الخدمة','الحالة','المسؤول','تاريخ الفتح','السعر','المحصّل','المتبقي',...(cv?['التكلفة','الربح']:[])];
+  const rows=cs.map(c=>[c.no,cName(c.customerId),c.service,STM[c.status].n,uName(c.responsibleId),fmtD(c.openDate),c.price,paid(c),remain(c),...(cv?[costOf(c),profit(c)]:[])]);
+  const foot=['الإجمالي','','','','','',sum(cs,c=>c.price),sum(cs,paid),sum(cs,remain),...(cv?[sum(cs,costOf),sum(cs,profit)]:[])];LASTREP={name:'تقرير-الملفات',head,rows:[...rows,foot]};
+  body=`${presetBar()}<div class="filters"><div class="field"><label for="rps">الخدمة</label><select id="rps" data-change="rflt" data-s="rp.service"><option value="">الكل</option>${opt(DB.settings.services.map(s=>s.n),R.service)}</select></div><div class="field"><label for="rpe">الموظف</label><select id="rpe" data-change="rflt" data-s="rp.emp"><option value="">الكل</option>${opt(empOpts(1),R.emp)}</select></div><div class="field"><label for="rpc">العميل</label><select id="rpc" data-change="rflt" data-s="rp.cust"><option value="">الكل</option>${opt(liveCust().filter(taxOK).map(c=>[c.id,c.name]),R.cust)}</select></div><div class="field"><label for="rpst">حالة الملف</label><select id="rpst" data-change="rflt" data-s="rp.status"><option value="">الكل</option>${opt([['g:new','جديدة'],['g:prog','قيد التنفيذ'],['g:done','مكتملة'],...stOpts],R.status)}</select></div></div>
+  <div class="muted sm">${cs.length} ملف</div>${cs.length?tbl(head,rows,foot):empty('لا توجد ملفات مطابقة للتصفية')}`}
+ else if(t==='custs'){const a=liveCust().filter(taxOK).map(c=>{const cs=liveCases().filter(x=>x.customerId===c.id);return{c,n:cs.length,v:sum(cs,x=>x.price),p:sum(cs,paid),r:sum(cs,remain)}}).filter(x=>x.n).sort(by(x=>-x.r));
+  LASTREP={name:'حسابات-العملاء',head:['العميل','الهاتف','عدد الملفات','إجمالي الخدمات','المحصّل','المتبقي'],rows:a.map(x=>[x.c.name,x.c.phone,x.n,x.v,x.p,x.r])};
+  body=`<div class="tbl-wrap"><table><thead><tr><th>العميل</th><th>الهاتف</th><th class="n">الملفات</th><th class="n">الإجمالي</th><th class="n">المحصّل</th><th class="n">المتبقي</th></tr></thead><tbody>${a.map(x=>`<tr class="clk" data-act="openCust" data-id="${x.c.id}"><td>${esc(x.c.name)}</td><td class="num">${esc(x.c.phone)}</td><td class="n">${x.n}</td><td class="n">${nf(x.v)}</td><td class="n">${nf(x.p)}</td><td class="n" style="color:${x.r?'var(--warn)':'inherit'}">${nf(x.r)}</td></tr>`).join('')}</tbody><tfoot><tr><td>الإجمالي</td><td></td><td class="n">${sum(a,x=>x.n)}</td><td class="n">${nf(sum(a,x=>x.v))}</td><td class="n">${nf(sum(a,x=>x.p))}</td><td class="n">${nf(sum(a,x=>x.r))}</td></tr></tfoot></table></div>`}
+ else if(t==='treasury'){const ev=[...liveRec().map(r=>({d:r.date,ts:r.ts,t:`تحصيل ${r.no} — ${cName(r.customerId)}`,i:r.amount,o:0})),...liveExp().map(e=>({d:e.date,ts:e.ts,t:`مصروف ${e.no} — ${e.category}`,i:0,o:e.amount}))].sort((a,b)=>(a.d+a.ts<b.d+b.ts?-1:1));let bal=DB.settings.openingBalance;const rows=ev.map(e=>{bal+=e.i-e.o;return[fmtD(e.d),e.t,e.i,e.o,num(bal)]});
+  LASTREP={name:'الخزينة',head:['التاريخ','البيان','وارد','صادر','الرصيد'],rows};const rc=sum(liveRec(),r=>r.amount),ex=sum(liveExp(),e=>e.amount);
+  body=`<div class="kpis">${kpi('الرصيد الافتتاحي',money(DB.settings.openingBalance))}${kpi('إجمالي الوارد',money(rc),{c:'good'})}${kpi('إجمالي الصادر',money(ex),{c:'bad'})}${kpi('رصيد الخزينة',money(treasury()),{c:'main'})}</div><p class="muted sm" style="margin:0">الخزينة تعكس النقد المحصّل فعلاً فقط. المبالغ المستحقة على العملاء لا تدخل فيها.</p>${rows.length?tbl(['التاريخ','البيان','وارد','صادر','الرصيد'],rows.slice().reverse().slice(0,80)):empty('لا حركات بعد')}`}
+ else if(t==='salaries'){const t0=T(),r=[monthStart(t0),monthEnd(t0)];const rows=vUsers().filter(u=>u.active&&u.salary>0).map(u=>{const p=sum(liveExp().filter(e=>e.category==='أجور موظفين'&&e.employeeId===u.id&&inR(e.date,r)),e=>e.amount);return{u,p,r:Math.max(0,u.salary-p)}});
+  LASTREP={name:'مستحقات-الموظفين',head:['الموظف','الدور','الراتب الشهري','المصروف هذا الشهر','المتبقي'],rows:rows.map(x=>[x.u.name,ROLES[x.u.role],x.u.salary,x.p,x.r])};
+  body=`<p class="muted sm" style="margin:0">الشهر الحالي. تُحتسب الرواتب المصروفة من المصروفات (نوع «أجور موظفين»).</p><div class="tbl-wrap"><table><thead><tr><th>الموظف</th><th>الدور</th><th class="n">الراتب</th><th class="n">المصروف</th><th class="n">المتبقي</th><th></th></tr></thead><tbody>${rows.map(x=>`<tr><td>${esc(x.u.name)}</td><td>${ROLES[x.u.role]}</td><td class="n">${nf(x.u.salary)}</td><td class="n">${nf(x.p)}</td><td class="n" style="color:${x.r?'var(--warn)':'var(--good)'}">${nf(x.r)}</td><td>${x.r>0&&can('expenses')?`<button class="btn sm" data-act="newExp" data-cat="أجور موظفين" data-emp="${x.u.id}" data-amt="${x.r}" data-note="راتب ${esc(x.u.name)}">صرف</button>`:''}</td></tr>`).join('')}</tbody></table></div>`}
+ else{body=smartTab()}
+ return `<div class="page-h"><h1>الحسابات والتقارير</h1>${t!=='smart'&&LASTREP?exportBar():''}</div><div class="tabs" role="tablist">${RPT.map(([k,l])=>`<button class="tab ${t===k?'on':''}" data-act="rpTab" data-k="${k}" role="tab">${l}</button>`).join('')}</div>${body}`};
+ACT.rpTab=d=>{S.rp.tab=d.k;refresh()};
+function smartTab(){const t=T(),pr=liveCases().filter(c=>G(c).g!=='done').sort(by(c=>-priority(c))).slice(0,8),dist=distribution(),sp=serviceProfit(),cur=finStats([monthStart(t),monthEnd(t)]),pm=addDays(monthStart(t),-1),prev=finStats([monthStart(pm),monthEnd(pm)]);
+ const cats={};cur.ex.forEach(e=>cats[e.category]=(cats[e.category]||0)+e.amount);const topC=Object.entries(cats).sort(by(x=>-x[1]))[0];const dl=(a,b)=>b?Math.round((a-b)/b*100):null;
+ const lines=[`الإيرادات (قيمة الخدمات) هذا الشهر ${money(cur.value)}${dl(cur.value,prev.value)!==null?` مقابل ${money(prev.value)} الشهر الماضي (${dl(cur.value,prev.value)>=0?'+':''}${dl(cur.value,prev.value)}٪)`:''}.`,`المصروفات هذا الشهر ${money(cur.execCost+cur.opex)}${topC?`، وأكبر بند هو «${topC[0]}» بمبلغ ${money(topC[1])}`:''}.`,sp[0]?`الخدمة الأكثر ربحاً: «${sp[0].s}» بربح ${money(sp[0].profit)} (هامش ${Math.round(sp[0].margin*100)}٪).`:'',cur.net<0?'تنبيه: صافي الربح المحاسبي سالب هذا الشهر، راجع المصروفات التشغيلية.':'صافي الربح المحاسبي هذا الشهر إيجابي.'].filter(Boolean);
+ return `<div class="banner info"><span>هذا التحليل يعتمد على قواعد حسابية على بياناتك داخل التطبيق دون إرسالها لأي جهة. أي إجراء مالي أو حكومي يبقى بقرار ومراجعة بشرية.</span></div>
+ <div class="cols"><section class="card flat"><div class="card-h"><h3>أولويات العمل المقترحة</h3></div>${pr.length?`<div class="list">${pr.map(c=>caseRow(c,`<span class="sub">${esc(whyText(c))}</span>`)).join('')}</div>`:empty('لا توجد ملفات مفتوحة')}</section>
+ <section class="card flat"><div class="card-h"><h3>اقتراح توزيع المهام</h3></div>${dist.length?dist.map(x=>{const c=kase(x.caseId);return `<div class="sugg"><span>نقل متابعة <b>${c.no}</b> (${esc(cName(c.customerId))}) من ${esc(uName(x.from))} إلى ${esc(uName(x.to))}</span><button class="btn sm primary" data-act="applyDist" data-id="${x.caseId}" data-to="${x.to}">اعتماد</button></div>`}).join(''):`<p class="muted" style="margin:0">الأحمال متوازنة حالياً بين الموظفين. لا توجد اقتراحات.</p>`}</section></div>
+ <section class="card flat"><div class="card-h"><h3>تحليل الإيرادات والمصروفات</h3></div><ul style="margin:0;padding-inline-start:20px;display:grid;gap:4px">${lines.map(l=>`<li>${esc(l)}</li>`).join('')}</ul></section>
+ ${can('cost.view')?`<section class="card flat"><div class="card-h"><h3>ربحية الخدمات</h3></div>${sp.length?tbl(['الخدمة','عدد الملفات','الإيراد','التكلفة','الربح','الهامش ٪'],sp.map(x=>[x.s,x.n,x.rev,x.cost,x.profit,Math.round(x.margin*100)])):empty('لا بيانات')}</section>`:''}
+ <section class="card flat"><div class="card-h"><h3>التقرير اليومي التلقائي</h3><button class="btn sm" data-act="cpyDaily">${ic('copy')} نسخ التقرير</button></div><pre class="report" id="daily">${esc(dailyReport(t))}</pre></section>`}
+ACT.applyDist=d=>{const c=kase(d.id);const old=c.followerId;c.followerId=d.to;c.updatedAt=nowISO();log('إعادة توزيع','ملف',c.id,`نقل متابعة ${c.no} من ${uName(old)} إلى ${uName(d.to)} (باعتماد المدير)`);save();refresh();toast('تم اعتماد التوزيع','good')};
+async function copyText(txt){try{await navigator.clipboard.writeText(txt);toast('تم النسخ','good')}catch(e){const m=pushModal({title:'انسخ النص يدوياً',noFocus:true,body:()=>`<textarea class="inp" rows="10" readonly id="cpy-ta">${esc(txt)}</textarea>`});setTimeout(()=>{const ta=$('#cpy-ta');ta&&ta.select()},50)}}
+ACT.cpyDaily=()=>copyText($('#daily').textContent);
+const tsv=()=>[LASTREP.head,...LASTREP.rows].map(r=>r.map(x=>String(x??'')).join('\t')).join('\n');
+ACT.cpy=()=>{if(!LASTREP)return;log('نسخ','تقرير','',`نسخ تقرير ${LASTREP.name}`);copyText(tsv())};
+function dlBlob(name,data,mime){const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([data],{type:mime}));a.download=name;document.body.appendChild(a);a.click();setTimeout(()=>{URL.revokeObjectURL(a.href);a.remove()},500)}
+ACT.exp=()=>{if(!LASTREP)return;log('تصدير','تقرير','',`تصدير تقرير ${LASTREP.name} إلى Excel`);const n=LASTREP.name+'-'+T();
+ if(window.XLSX){try{const ws=XLSX.utils.aoa_to_sheet([LASTREP.head,...LASTREP.rows]);ws['!cols']=LASTREP.head.map(()=>({wch:20}));const wb=XLSX.utils.book_new();wb.Workbook={Views:[{RTL:true}]};XLSX.utils.book_append_sheet(wb,ws,'تقرير');XLSX.writeFile(wb,n+'.xlsx');toast('جاري تنزيل ملف Excel. إن لم يبدأ التنزيل استخدم زر «نسخ» ثم الصق في Excel.');return}catch(e){}}
+ const csv='﻿'+[LASTREP.head,...LASTREP.rows].map(r=>r.map(x=>'"'+String(x??'').replace(/"/g,'""')+'"').join(',')).join('\r\n');dlBlob(n+'.csv',csv,'text/csv;charset=utf-8');toast('جاري تنزيل الملف. إن لم يبدأ التنزيل استخدم زر «نسخ» ثم الصق في Excel.')};
+ACT.prn=()=>{if(!LASTREP)return;log('طباعة','تقرير','',`طباعة تقرير ${LASTREP.name}`);const rows=LASTREP.rows;printHTML(`<h2 style="text-align:center">${esc(DB.settings.office)} — ${esc(LASTREP.name.replace(/-/g,' '))}</h2><p style="text-align:center">${fmtD(T())}</p>${tbl(LASTREP.head,rows)}`)};
+
+/* ================= الموظفون ================= */
+VIEWS.staff=()=>{const t=S.staff;return `<div class="page-h"><h1>الموظفون</h1>${t==='users'?btnAdd('newUser','إضافة موظف'):''}</div><div class="tabs"><button class="tab ${t==='users'?'on':''}" data-act="stTab" data-k="users">الموظفون</button><button class="tab ${t==='audit'?'on':''}" data-act="stTab" data-k="audit">سجل العمليات</button></div>
+ ${t==='users'?`<div class="list">${vUsers().map(u=>{const n=liveCases().filter(c=>c.responsibleId===u.id&&G(c).g!=='done').length;return `<div class="row" data-act="editUser" data-id="${u.id}" tabindex="0"><div><div class="t">${esc(u.name)} ${u.active?'':'<span class="pill bad">موقوف</span>'}</div><div class="sub">${u.role==='admin'?'كل الصلاحيات':u.perms?'صلاحيات مخصصة':'صلاحيات الدور الافتراضية'}</div></div><div><span class="pill prog">${ROLES[u.role]}</span></div><div class="sub">${n} ملف مفتوح<br><span class="num">${esc(u.phone||'')}</span></div><div class="end">${u.salary?nf(u.salary):''}<small>الراتب</small></div></div>`}).join('')}</div>
+ <div class="card flat"><h3 style="margin-bottom:4px">القوالب الافتراضية للأدوار</h3><p class="muted sm" style="margin:0 0 8px">هذه نقطة البداية فقط. افتح أي موظف من القائمة لتخصيص صلاحياته بالتفصيل.</p>${tbl(['الدور','ما يمكنه فعله'],[['المدير','صلاحية كاملة: النظام، التقارير، المالية، الموظفون، الحذف والاستعادة'],['موظف المكتب','إضافة العملاء والملفات، تحديث الحالات والمتابعات والمهام، رفع المستندات. لا يرى التكاليف ولا يسجل التحصيلات'],['المحاسب','التحصيلات والمصروفات والتقارير المالية. يطلع على العملاء والملفات دون تعديلها'],['المندوب','يرى الملفات المسندة إليه فقط، يحدّث الحالة والمتابعة ويرفع المستندات. لا يرى الأسعار']])}</div>`
+ :`<div class="card flat"><div class="filters"><div class="field" style="flex:2"><label for="aq">بحث في السجل</label><input id="aq" type="search" data-input="flt" data-s="aud.q" value="${esc(S.aud.q)}" placeholder="اسم، عملية، كلمة بحث..."></div><div class="field"><label for="au">الموظف</label><select id="au" data-change="flt" data-s="aud.uid"><option value="">الكل</option>${opt(audUsers(),S.aud.uid)}</select></div><div class="field"><label for="aa">نوع العملية</label><select id="aa" data-change="flt" data-s="aud.act"><option value="">الكل</option>${opt([...new Set(audVis().map(x=>x.action))],S.aud.act)}</select></div><div class="field"><label for="af">من</label><input id="af" type="date" data-change="flt" data-s="aud.from" value="${S.aud.from}"></div><div class="field"><label for="at">إلى</label><input id="at" type="date" data-change="flt" data-s="aud.to" value="${S.aud.to}"></div></div>${isOwner()?`<div class="btns" style="margin-top:10px"><button class="btn sm" data-act="expAudit">${ic('dl')} تصدير السجل الكامل</button></div>`:''}</div><div class="card flat" id="vlist">${LISTS.staff()}</div>`}`};
+LISTS.staff=()=>{const A=S.aud,q=normName(A.q);const all=audVis().filter(x=>(!A.uid||x.uid===A.uid)&&(!A.act||x.action===A.act)&&(!A.from||x.ts.slice(0,10)>=A.from)&&(!A.to||x.ts.slice(0,10)<=A.to)&&(!q||normName(x.uname+' '+x.action+' '+x.entity+' '+x.desc).includes(q)));const a=all.slice(0,300);
+ return all.length?`<div class="muted sm">${all.length} عملية${all.length>300?' (يعرض أحدث 300)':''}</div><div class="tl">${a.map(x=>`<div class="ev"><span class="dot ${x.action==='بحث'||x.action==='اختيار من البحث'?'fol':''}"></span><div><b>${esc(x.action)}</b> · ${esc(x.desc)}<br><small>${esc(x.uname)}${x.o?' (سجل المالك)':''} · ${fmtDT(x.ts)}</small></div></div>`).join('')}</div>`:empty('لا توجد عمليات مطابقة')};
+ACT.stTab=d=>{S.staff=d.k;refresh()};
+function permBox(u){const adm=u.role==='admin';const cur=new Set(adm?[]:u.id?userPerms(u):PERMS.employee);
+ return `<div class="fsec ${adm?'hide':''}" id="permbox"><div class="card-h" style="margin:0"><h4>صلاحيات هذا الموظف</h4><div class="btns"><button type="button" class="btn sm" data-act="permAll" data-v="1">تحديد الكل</button><button type="button" class="btn sm" data-act="permAll" data-v="0">إلغاء الكل</button></div></div><p class="muted sm" style="margin:0">حدّد بالضبط ما يستطيع رؤيته وتعديله. تغيير «الدور» يحمّل القالب الافتراضي له وتقدر تعدّله بعدها.</p>${PERM_GROUPS.map(g=>`<div><div class="lbl" style="margin-bottom:6px">${g.t}</div><div style="display:grid;gap:6px">${g.items.map(([k,l,h])=>`<label class="chk"><input type="checkbox" name="p_${k}" value="1" ${cur.has(k)?'checked':''}><span class="tt">${l}${h?`<div class="muted xs">${h}</div>`:''}</span></label>`).join('')}</div></div>`).join('')}</div><div class="banner info ${adm?'':'hide'}" id="permadm"><span>المدير يملك كل الصلاحيات تلقائياً ولا يمكن تقييدها.</span></div>`}
+function collectPerms(d){const all=PERM_GROUPS.flatMap(g=>g.items.map(i=>i[0]));const s=new Set(all.filter(k=>d['p_'+k]==='1'));
+ if(['cases.edit','cases.update','cases.all'].some(k=>s.has(k)))s.add('cases.view');
+ if(s.has('customers.edit'))s.add('customers.view');
+ if(s.has('taxclients.edit'))s.add('taxclients.view');
+ if(s.has('cost.view'))s.add('price.view');
+ return [...s]}
+CHG.roleTpl=(v,t)=>{const f=t.closest('form'),adm=v==='admin';$('#permbox',f).classList.toggle('hide',adm);$('#permadm',f).classList.toggle('hide',!adm);
+ if(!adm){const s=new Set(PERMS[v]||[]);PERM_GROUPS.forEach(g=>g.items.forEach(([k])=>{const e=f.elements['p_'+k];if(e)e.checked=s.has(k)}))}};
+ACT.permAll=(d,b)=>{$$('#permbox input[type=checkbox]',b.closest('form')).forEach(x=>x.checked=d.v==='1')};
+function userForm(u){u=u||{};return `<form data-form="user" data-id="${u.id||''}"><div class="fg">${F.t('name','الاسم *',u.name||'','required')}${F.s('role','الدور (قالب افتراضي للصلاحيات)',Object.entries(ROLES).filter(x=>x[0]!=='owner'),u.role||'employee','data-change="roleTpl"')}${F.n('salary','الراتب الشهري',u.salary||'')}${F.t('phone','الهاتف',u.phone||'','inputmode="tel"')}${F.t('pw',u.id?'كلمة مرور جديدة (اتركها فارغة للإبقاء)':'كلمة المرور * (6 أحرف فأكثر، ولا تتكرر مع موظف آخر)','','type="password" autocomplete="new-password" '+(u.id?'':'required'))}</div>${u.id?`<label class="chk"><input type="checkbox" name="active" value="1" ${u.active?'checked':''}><span class="tt">الحساب فعّال</span></label>`:''}${permBox(u)}<div class="formerr"></div><div class="btns"><button class="btn primary" type="submit">حفظ</button><button class="btn" type="button" data-act="closeModal">إلغاء</button></div></form>`}
+ACT.newUser=()=>pushModal({title:'إضافة موظف',body:()=>userForm()});ACT.editUser=d=>pushModal({title:'تعديل موظف',body:()=>userForm(user(d.id))});
+FORMS.user=async(d,f)=>{if(!isAdm())return;const id=f.dataset.id;if(!d.name.trim())return ferr(f,'الاسم مطلوب');if(d.role==='owner')return ferr(f,'دور غير مسموح');
+ const sal=numIn(d.salary)||0;
+ if(d.pw){if(d.pw.length<6)return ferr(f,'كلمة المرور 6 أحرف على الأقل');if(await pwTaken(d.pw,id))return ferr(f,'كلمة المرور غير متاحة، اختر كلمة أخرى')}
+ if(id){const u=user(id);if(!u||u.role==='owner')return ferr(f,'غير مسموح');const act=d.active==='1';
+  if(u.role==='admin'&&(d.role!=='admin'||!act)&&DB.users.filter(x=>x.role==='admin'&&x.active&&x.id!==id).length===0)return ferr(f,'لا يمكن إيقاف أو تغيير دور آخر مدير فعّال');
+  Object.assign(u,{name:d.name.trim(),username:d.name.trim(),role:d.role,salary:sal,phone:d.phone,active:act});if(d.role==='admin')delete u.perms;else u.perms=collectPerms(d);
+  if(d.pw){u.salt=uid();u.pw=await hashPw(d.pw,u.salt)}log('تعديل','موظف',id,`تعديل بيانات وصلاحيات الموظف ${u.name}`)}
+ else{if((d.pw||'').length<6)return ferr(f,'كلمة المرور 6 أحرف على الأقل');const u=await mkUser(d.name.trim(),d.name.trim(),d.role,d.pw,sal,d.phone);if(d.role!=='admin')u.perms=collectPerms(d);DB.users.push(u);log('إضافة','موظف',u.id,`إضافة الموظف ${u.name} (${ROLES[u.role]})`)}
+ save();closeModal();refresh();toast('تم الحفظ','good')};
+ACT.expAudit=()=>{if(!isOwner())return;log('تصدير','سجل','','تصدير سجل العمليات الكامل');dlBlob(`audit-log-${T()}.json`,JSON.stringify(AUD),'application/json')};
+/* ================= المستندات ================= */
+VIEWS.docs=()=>`<div class="page-h"><h1>المستندات</h1>${can('docs')?btnAdd('newDoc','رفع مستند'):''}</div><div class="card flat"><div class="filters"><div class="field" style="flex:3"><label for="dq2">بحث</label><input id="dq2" type="search" data-input="flt" data-s="df.q" value="${esc(S.df.q)}" placeholder="اسم المستند أو العميل أو رقم الملف"></div><div class="field"><label for="dc2">التصنيف</label><select id="dc2" data-change="flt" data-s="df.cat"><option value="">الكل</option>${opt(DOCC,S.df.cat)}</select></div></div></div><div class="list" id="vlist">${LISTS.docs()}</div>`;
+LISTS.docs=()=>{const q=normName(S.df.q),vis=new Set(visCases().map(c=>c.id));const a=DB.docs.filter(d=>!d.deleted&&(can('docs.all')||(d.caseId&&vis.has(d.caseId)))&&(!S.df.cat||d.cat===S.df.cat)&&(!q||normName(d.name+' '+cName(d.customerId)+' '+(kase(d.caseId)?.no||'')).includes(q))).sort(by(d=>d.ts,-1));return a.length?a.map(docRow).join(''):empty('لا توجد مستندات','ارفع صور الهويات والعقود والإيصالات وربطها بالعميل أو الملف.')};
+/* ================= التنبيهات والبحث ================= */
+ACT.alerts=()=>{const a=myAlerts(),m=isAdm()?managerAlerts():[];pushModal({title:'التنبيهات',noFocus:true,body:()=>`${m.map(x=>`<div class="banner ${x.k}"><span>${esc(x.t)}</span><button class="btn sm" data-act="alertgo" data-to="${x.go}" data-tab="${x.tab||''}">عرض</button></div>`).join('')}${a.length?`<div class="list">${a.slice(0,30).map(x=>`<div class="row" style="grid-template-columns:1fr;border-inline-start:4px solid var(--${x.k==='bad'?'bad':x.k==='warn'?'brass':'info'})" ${x.id?`data-act="openCase" data-id="${x.id}"`:`data-act="go" data-to="${x.go}"`} tabindex="0"><div><div class="t">${esc(x.t)}</div><div class="sub">${esc(x.s||'')}</div></div></div>`).join('')}</div>`:(m.length?'':empty('لا توجد تنبيهات','كل شيء ضمن الجدول.'))}`})};
+const hideSearch=()=>{const g=$('#gres');if(g)g.classList.add('hide')};
+INP.gsearch=v=>{const box=$('#gres');v=v.trim();if(v.length<2){hideSearch();return}const q=normName(v),qp=toEn(v).replace(/\D/g,'');
+ const cu=visibleCust().filter(c=>normName(c.name).includes(q)||c.code.toLowerCase().includes(q)||(qp.length>=3&&(normPhone(c.phone).includes(qp)||normPhone(c.phone2).includes(qp)))).slice(0,5);
+ const cs=visCases().filter(c=>c.no.toLowerCase().includes(q)||normName(c.service).includes(q)||normName(STM[c.status].n).includes(q)||normName(c.nextStep).includes(q)||normName(cName(c.customerId)).includes(q)||(qp.length>=3&&normPhone(cust(c.customerId)?.phone).includes(qp))||c.followDate===v||c.expectedDate===v||(v.includes('/')&&(fmtD(c.followDate)===v||fmtD(c.expectedDate)===v))).slice(0,7);
+ const us=vUsers().filter(u=>u.active&&normName(u.name).includes(q)).slice(0,3),tk=can('tasks')?DB.tasks.filter(t=>!t.deleted&&normName(t.title).includes(q)&&(isAdm()||t.assigneeId===ME.id)).slice(0,3):[];
+ const sec=(h,a)=>a.length?`<h5>${h}</h5>${a.join('')}`:'';
+ const html=sec('العملاء',cu.map(c=>`<div class="it" data-act="gOpenCust" data-id="${c.id}"><span>${esc(c.name)}</span><span class="muted sm num">${esc(c.phone)}</span></div>`))+sec('الملفات',cs.map(c=>`<div class="it" data-act="gOpenCase" data-id="${c.id}"><span><b class="num">${c.no}</b> ${esc(cName(c.customerId))}</span><span>${pill(c)}</span></div>`))+sec('الموظفون',us.map(u=>`<div class="it" data-act="gEmp" data-id="${u.id}"><span>${esc(u.name)}</span><span class="muted sm">${ROLES[u.role]} — عرض ملفاته</span></div>`))+sec('المهام',tk.map(t=>`<div class="it" data-act="gTask" data-t="${esc(t.title)}"><span>${esc(t.title)}</span><span class="muted sm">${fmtD(t.due)}</span></div>`));
+ logSearch('البحث الشامل',v,cu.length+cs.length+us.length+tk.length);box.innerHTML=html||'<div class="empty" style="border:0">لا توجد نتائج</div>';box.classList.remove('hide')};
+const gClose=()=>{hideSearch();$('#gs').value=''};
+const gPick=(kind,desc)=>{const q=($('#gs').value||'').trim();flushSearch('البحث الشامل');log('اختيار من البحث',kind,'',`اختار من نتائج البحث عن «${q}»: ${desc}`)};
+ACT.gOpenCust=d=>{const c=cust(d.id);gPick('عميل',`العميل ${c?c.name:''}`);gClose();ACT.openCust(d)};
+ACT.gOpenCase=d=>{const c=kase(d.id);gPick('ملف',c?`الملف ${c.no} — ${cName(c.customerId)} (${c.service})`:'ملف');gClose();ACT.openCase(d)};
+ACT.gTask=(d)=>{gPick('مهمة',`المهمة «${(d&&d.t)||''}»`);gClose();go('tasks')};
+ACT.gEmp=d=>{gPick('موظف',`الموظف ${uName(d.id)} (عرض ملفاته)`);gClose();if(!can('cases.all'))return toast('لا تملك صلاحية عرض ملفات الموظفين','bad');S.cf={q:'',status:'',service:'',emp:d.id,late:''};go('cases')};
+/* ================= الإعدادات ================= */
+VIEWS.options=()=>{const adm=isAdm();const trash=adm?[...DB.customers.filter(x=>x.deleted).map(x=>({k:'cust',id:x.id,t:'عميل: '+x.name,at:x.deleted})),...DB.cases.filter(x=>x.deleted).map(x=>({k:'case',id:x.id,t:'ملف: '+x.no+' — '+cName(x.customerId),at:x.deleted})),...DB.tasks.filter(x=>x.deleted).map(x=>({k:'task',id:x.id,t:'مهمة: '+x.title,at:x.deleted})),...DB.docs.filter(x=>x.deleted).map(x=>({k:'doc',id:x.id,t:'مستند: '+x.name,at:x.deleted}))].sort(by(x=>x.at,-1)):[];
+ let snaps=[];try{snaps=JSON.parse(lsGet(SKEY)||'[]')}catch(e){}
+ return `<div class="page-h"><h1>الإعدادات</h1></div>
+ <div class="cols"><section class="card"><div class="card-h"><h3>حسابي</h3></div><p style="margin:0 0 10px"><b>${esc(ME.name)}</b> · ${ROLES[ME.role]}</p><form data-form="pw">${F.t('cur','كلمة المرور الحالية','','type="password" required autocomplete="current-password"')}${F.t('nw','كلمة المرور الجديدة (6 أحرف فأكثر)','','type="password" required autocomplete="new-password"')}<div class="formerr"></div><div class="btns"><button class="btn primary" type="submit">تغيير كلمة المرور</button><button class="btn" type="button" data-act="theme">تبديل المظهر (فاتح / داكن)</button><button class="btn" type="button" data-act="installApp">${ic('dl')} تثبيت التطبيق على هذا الجهاز</button></div></form></section>
+ ${adm?`<section class="card"><div class="card-h"><h3>بيانات المكتب</h3></div><form data-form="office">${F.t('office','اسم المكتب',DB.settings.office,'required')}<div class="fg">${F.n('staleDays','عدد أيام عدم التحديث للتنبيه',DB.settings.staleDays)}${F.n('openingBalance','الرصيد الافتتاحي للخزينة (ج.م)',DB.settings.openingBalance)}</div><div class="formerr"></div><button class="btn primary" type="submit">حفظ</button></form></section>`:''}</div>
+ ${adm?syncCard():''}
+ ${adm?`<section class="card"><div class="card-h"><h3>هوية النظام (الاسم والشعار)</h3></div><form data-form="brand"><div style="display:flex;gap:14px;align-items:center;flex-wrap:wrap"><div class="logo" style="width:64px;height:64px;border-radius:16px">${brandLogo()}</div><div class="muted sm">يظهر الشعار والاسم في شاشة الدخول والقائمة الجانبية ورسالة الترحيب.</div></div><div class="fg">${F.t('appName','اسم النظام',DB.settings.appName||'SMART OFFICE','required')}</div><div class="field"><label for="lgf">تغيير صورة البرنامج (الشعار)</label><input id="lgf" type="file" name="logo" accept="image/*"><span class="help">تُصغَّر الصورة تلقائياً. يفضّل صورة مربعة.</span></div>${DB.settings.logo?`<label class="chk"><input type="checkbox" name="rmlogo" value="1"><span class="tt">حذف الشعار والرجوع للشعار الافتراضي</span></label>`:''}<div class="formerr"></div><button class="btn primary" type="submit">حفظ الهوية</button></form></section>
+ <div class="cols"><section class="card"><div class="card-h"><h3>أنواع الخدمات وأسعارها الافتراضية</h3></div><form data-form="services"><div class="field"><label for="svt">سطر لكل خدمة بالشكل: الاسم | السعر</label><textarea id="svt" name="t" rows="10">${esc(DB.settings.services.map(s=>s.n+' | '+s.p).join('\n'))}</textarea></div><div class="formerr"></div><button class="btn primary" type="submit">حفظ الخدمات</button></form></section>
+ <section class="card"><div class="card-h"><h3>مصادر العملاء</h3></div><form data-form="sources"><div class="field"><label for="srt">سطر لكل مصدر</label><textarea id="srt" name="t" rows="7">${esc(DB.settings.sources.join('\n'))}</textarea></div><div class="formerr"></div><button class="btn primary" type="submit">حفظ المصادر</button></form></section></div>
+ <section class="card"><div class="card-h"><h3>النسخ الاحتياطي واستعادة البيانات</h3></div><p class="muted sm" style="margin-top:0">البيانات محفوظة داخل هذا المتصفح على هذا الجهاز. يُحفظ تلقائياً آخر 3 نسخ يومية. صدّر نسخة خارجية بانتظام. النسخة الخارجية لا تشمل محتوى المرفقات (الصور وPDF)، وتشمل بياناتها الوصفية.</p>
+ <div class="btns"><button class="btn" data-act="backup">${ic('dl')} تصدير نسخة (ملف)</button><button class="btn" data-act="backupCopy">${ic('copy')} نسخ النسخة كنص</button>${snaps.map((s,i)=>`<button class="btn" data-act="restoreSnap" data-i="${i}">استعادة نسخة ${fmtD(s.date)}</button>`).join('')}</div>
+ <form data-form="import" style="margin-top:12px"><div class="field"><label for="imf">استيراد نسخة احتياطية (ملف JSON)</label><input id="imf" type="file" name="f" accept=".json,application/json"></div><div class="field"><label for="imt">أو الصق محتوى النسخة هنا</label><textarea id="imt" name="t" rows="3"></textarea></div><div class="formerr"></div><button class="btn danger" type="submit">استيراد (يستبدل كل البيانات الحالية)</button></form></section>
+ <section class="card"><div class="card-h"><h3>سلة المحذوفات</h3><span class="muted sm">${trash.length} عنصر</span></div>${trash.length?`<div class="list">${trash.map(x=>`<div class="row" style="grid-template-columns:1fr auto"><div><div class="t">${esc(x.t)}</div><div class="sub">حُذف ${fmtDT(x.at)}</div></div><div class="btns"><button class="btn sm" data-act="restore" data-k="${x.k}" data-id="${x.id}">استعادة</button><button class="btn sm danger" data-act="purge" data-k="${x.k}" data-id="${x.id}">حذف نهائي</button></div></div>`).join('')}</div>`:'<span class="muted">السلة فارغة</span>'}</section>
+ ${DB.demo?`<section class="card"><div class="card-h"><h3>بيانات تجريبية</h3></div><p class="muted sm" style="margin-top:0">النظام يحتوي حالياً على بيانات أمثلة للتجربة.</p><button class="btn danger" data-act="clearDemo">حذف البيانات التجريبية والبدء من الصفر</button></section>`:''}`:''}`};
+FORMS.pw=async(d,f)=>{if(ME.pw!==await hashPw(d.cur,ME.salt))return ferr(f,'كلمة المرور الحالية غير صحيحة');if(d.nw.length<6)return ferr(f,'كلمة المرور الجديدة قصيرة (6 أحرف على الأقل)');if(await pwTaken(d.nw,ME.id))return ferr(f,'كلمة المرور غير متاحة، اختر كلمة أخرى');ME.salt=uid();ME.pw=await hashPw(d.nw,ME.salt);log('تعديل','موظف',ME.id,'تغيير كلمة المرور');save();f.reset();toast('تم تغيير كلمة المرور','good')};
+function shrinkImg(file,max){return new Promise((res,rej)=>{const fr=new FileReader();fr.onerror=rej;fr.onload=()=>{const im=new Image();im.onerror=rej;im.onload=()=>{const k=Math.min(1,max/Math.max(im.width,im.height)),w=Math.max(1,Math.round(im.width*k)),h=Math.max(1,Math.round(im.height*k)),c=document.createElement('canvas');c.width=w;c.height=h;c.getContext('2d').drawImage(im,0,0,w,h);res(c.toDataURL('image/png'))};im.src=fr.result};fr.readAsDataURL(file)})}
+FORMS.brand=async(d,f)=>{if(!isAdm())return;const nm=(d.appName||'').trim();if(!nm)return ferr(f,'اكتب اسم النظام');const file=f.elements.logo.files[0];let logo=DB.settings.logo||'';if(d.rmlogo==='1')logo='';
+ if(file){if(!/^image\//.test(file.type))return ferr(f,'اختر ملف صورة');try{logo=await shrinkImg(file,256)}catch(e){return ferr(f,'تعذّر قراءة الصورة')}}
+ DB.settings.appName=nm;DB.settings.logo=logo;log('تعديل','إعدادات','','تعديل هوية النظام (الاسم/الشعار)');save();refresh();toast('تم حفظ الهوية','good')};
+FORMS.office=(d,f)=>{if(!isAdm())return;DB.settings.office=d.office.trim()||DB.settings.office;DB.settings.staleDays=Math.max(1,parseInt(toEn(d.staleDays))||7);DB.settings.openingBalance=numIn(d.openingBalance)||0;log('تعديل','إعدادات','','تعديل بيانات المكتب');save();refresh();toast('تم الحفظ','good')};
+FORMS.services=(d,f)=>{const out=[];for(const l of d.t.split('\n')){if(!l.trim())continue;const [n,p]=l.split('|');const price=numIn(p);if(!n.trim()||isNaN(price))return ferr(f,`السطر «${l.trim()}» غير صحيح. الصيغة: الاسم | السعر`);out.push({n:n.trim(),p:price})}if(!out.length)return ferr(f,'أضف خدمة واحدة على الأقل');DB.settings.services=out;log('تعديل','إعدادات','','تعديل أنواع الخدمات');save();refresh();toast('تم حفظ الخدمات','good')};
+FORMS.sources=(d)=>{DB.settings.sources=d.t.split('\n').map(x=>x.trim()).filter(Boolean);save();refresh();toast('تم الحفظ','good')};
+const exportDB=()=>isOwner()?DB:{...DB,users:DB.users.filter(u=>u.role!=='owner')};
+ACT.backup=()=>{log('تصدير','نظام','','تصدير نسخة احتياطية');dlBlob(`smart-office-backup-${T()}.json`,JSON.stringify(exportDB()),'application/json');toast('جاري تنزيل النسخة. إن لم يبدأ التنزيل استخدم «نسخ النسخة كنص».')};
+ACT.backupCopy=()=>{log('تصدير','نظام','','نسخ نسخة احتياطية كنص');copyText(JSON.stringify(exportDB()))};
+function applyBackup(txt){let o;try{o=JSON.parse(txt)}catch(e){return 'الملف ليس نسخة احتياطية صالحة'}if(!o||!Array.isArray(o.users)||!Array.isArray(o.cases)||!Array.isArray(o.customers)||!o.settings)return 'بنية النسخة غير صحيحة';ask(`سيتم استبدال كل البيانات الحالية بنسخة تحتوي ${o.customers.length} عميل و${o.cases.length} ملف. هل أنت متأكد؟`,'نعم، استبدل',()=>{const ow=DB.users.find(u=>u.role==='owner');DB=o;DB.audit=[];DB.users=DB.users.filter(u=>u.role!=='owner');if(ow)DB.users.push(ow);ensureOwner();const me=DB.users.find(u=>u.id===ME.id&&u.active);log('استعادة','نظام','','استعادة نسخة احتياطية');save();if(!me){ACT.logout();return}ME=me;refresh();toast('تمت استعادة النسخة','good')},true);return ''}
+FORMS.import=async(d,f)=>{const file=f.elements.f.files[0];const txt=file?await file.text():d.t;if(!txt||!txt.trim())return ferr(f,'اختر ملفاً أو الصق المحتوى');const e=applyBackup(txt);if(e)ferr(f,e)};
+ACT.restoreSnap=d=>{let s=[];try{s=JSON.parse(lsGet(SKEY)||'[]')}catch(e){}const x=s[+d.i];if(x){const e=applyBackup(x.data);if(e)toast(e,'bad')}};
+ACT.restore=d=>{const arr={cust:DB.customers,case:DB.cases,task:DB.tasks,doc:DB.docs}[d.k];const x=arr.find(z=>z.id===d.id);delete x.deleted;log('استعادة',d.k,d.id,'استعادة عنصر من السلة');save();refresh();toast('تمت الاستعادة','good')};
+ACT.purge=d=>ask('سيُحذف هذا العنصر نهائياً ولا يمكن استرجاعه.','حذف نهائي',async()=>{const key={cust:'customers',case:'cases',task:'tasks',doc:'docs'}[d.k];if(d.k==='doc')await IDB.del(d.id);if(d.k==='case'){DB.receipts=DB.receipts.filter(r=>r.caseId!==d.id);DB.expenses=DB.expenses.filter(r=>r.caseId!==d.id)}DB[key]=DB[key].filter(z=>z.id!==d.id);log('حذف نهائي',d.k,d.id,'حذف نهائي بواسطة المدير');save();refresh();toast('تم الحذف النهائي')},true);
+
+/* ================= المزامنة السحابية (Firebase Realtime Database + تشفير AES-GCM على الجهاز) ================= */
+const SYNCK='smartoffice.sync.v1',SYNCB='smartoffice.syncbase.v1';
+const SY={cfg:null,k:null,ts:0,base:{},busy:false,again:false,t:null,status:'off',last:0,err:'',timer:null,started:false};
+const COLS=['users','customers','cases','receipts','expenses','tasks','docs'];
+const toB64=u=>{let s='';const c=0x8000;for(let i=0;i<u.length;i+=c)s+=String.fromCharCode.apply(null,u.subarray(i,i+c));return btoa(s)};
+const fromB64=s=>Uint8Array.from(atob(s),c=>c.charCodeAt(0));
+function syLoad(){try{SY.cfg=JSON.parse(lsGet(SYNCK)||'null')}catch(e){SY.cfg=null}
+ try{const b=JSON.parse(lsGet(SYNCB)||'null');if(b){SY.base=b.base||{};SY.ts=b.ts||0;SY.last=b.last||0}}catch(e){}}
+const sySaveBase=()=>lsSet(SYNCB,JSON.stringify({base:SY.base,ts:SY.ts,last:SY.last}));
+function syHash(o){const s=JSON.stringify(o);let h1=0xdeadbeef,h2=0x41c6ce57;for(let i=0;i<s.length;i++){const c=s.charCodeAt(i);h1=Math.imul(h1^c,2654435761);h2=Math.imul(h2^c,1597334677)}
+ h1=Math.imul(h1^(h1>>>16),2246822507)^Math.imul(h2^(h2>>>13),3266489909);h2=Math.imul(h2^(h2>>>16),2246822507)^Math.imul(h1^(h1>>>13),3266489909);return (4294967296*(2097151&h2)+(h1>>>0)).toString(36)}
+function syBase(db){const m={};COLS.forEach(k=>(db[k]||[]).forEach(x=>m[k+':'+x.id]=syHash(x)));m.settings=syHash(db.settings||{});return m}
+const syNorm=()=>{DB.audit=DB.audit||[];DB.docs=DB.docs||[];DB.tasks=DB.tasks||[];DB.counters=DB.counters||{};DB.settings=DB.settings||{};COLS.forEach(k=>DB[k]=DB[k]||[])};
+/* مفاتيح التشفير: من «كود المكتب» نشتق مسار التخزين ومفتاح AES. الخادم لا يرى سوى نص مشفّر. */
+async function syKeys(){if(SY.k&&SY.k.code===SY.cfg.code)return SY.k;
+ if(!(window.crypto&&crypto.subtle))throw new Error('المتصفح لا يدعم التشفير المطلوب (يلزم فتح التطبيق عبر رابط https)');
+ const enc=new TextEncoder(),base=await crypto.subtle.importKey('raw',enc.encode(SY.cfg.code),'PBKDF2',false,['deriveKey','deriveBits']);
+ const bits=await crypto.subtle.deriveBits({name:'PBKDF2',salt:enc.encode('so-id-v1'),iterations:100000,hash:'SHA-256'},base,128);
+ const id=[...new Uint8Array(bits)].map(x=>x.toString(16).padStart(2,'0')).join('');
+ const key=await crypto.subtle.deriveKey({name:'PBKDF2',salt:enc.encode('so-key-v1'),iterations:100000,hash:'SHA-256'},base,{name:'AES-GCM',length:256},false,['encrypt','decrypt']);
+ return SY.k={code:SY.cfg.code,id,key}}
+async function syEnc(key,txt){const iv=crypto.getRandomValues(new Uint8Array(12));const ct=new Uint8Array(await crypto.subtle.encrypt({name:'AES-GCM',iv},key,new TextEncoder().encode(txt)));const o=new Uint8Array(12+ct.length);o.set(iv);o.set(ct,12);return toB64(o)}
+async function syDec(key,s){const u=fromB64(s);const pt=await crypto.subtle.decrypt({name:'AES-GCM',iv:u.slice(0,12)},key,u.slice(12));return new TextDecoder().decode(pt)}
+const syUrl=p=>SY.cfg.url.replace(/\/+$/,'')+'/offices/'+p+'.json';
+async function syFetch(url,o){const c=new AbortController(),t=setTimeout(()=>c.abort(),25000);try{return await fetch(url,Object.assign({cache:'no-store',signal:c.signal},o||{}))}finally{clearTimeout(t)}}
+function syHttp(r){const e=new Error(r.status===401||r.status===403?'رفض الوصول: راجع قواعد Firebase (Rules) كما في الدليل':r.status===404?'رابط قاعدة البيانات غير صحيح':'خطأ من الخادم '+r.status);e.syhttp=1;return e}
+function syErrMsg(e){if(e&&e.syhttp)return e.message;if(e&&e.name==='OperationError')return 'كود المكتب غير صحيح أو البيانات تالفة';if(e&&(e.name==='AbortError'||e instanceof TypeError))return 'تعذر الاتصال بالسحابة. تأكد من الإنترنت ومن الرابط';return (e&&e.message)||'خطأ غير معروف'}
+const syGAS=()=>/script\.google\.com/.test(SY.cfg.url);
+async function syGas(q,body){const r=await syFetch(SY.cfg.url+(q||''),body?{method:'POST',headers:{'Content-Type':'text/plain;charset=utf-8'},body}:{});if(!r.ok)throw syHttp(r);let j;
+ try{j=await r.json()}catch(e){const x=new Error('الرابط لا يرد بالشكل المتوقع. تأكد من نشر السكربت بصلاحية «أي شخص» (Anyone) وأنك نسخت الرابط المنتهي بـ /exec');x.syhttp=1;throw x}
+ if(j&&j.error){const x=new Error('خطأ من السكربت: '+j.error);x.syhttp=1;throw x}return j}
+async function syGetTs(){const k=await syKeys();if(syGAS()){const j=await syGas('?a=ts&id='+k.id);return j.ts||null}const r=await syFetch(syUrl(k.id+'/ts'));if(!r.ok)throw syHttp(r);return await r.json()}
+async function syGetAll(){const k=await syKeys();let j;if(syGAS())j=await syGas('?a=get&id='+k.id);else{const r=await syFetch(syUrl(k.id));if(!r.ok)throw syHttp(r);j=await r.json()}if(!j||!j.d)return null;const p=JSON.parse(await syDec(k.key,j.d));return{ts:j.ts,db:p.db,aud:p.aud||[]}}
+async function syPut(){const k=await syKeys(),ts=Date.now();const d=await syEnc(k.key,JSON.stringify({db:DB,aud:AUD.slice(0,3000)}));
+ if(syGAS())await syGas('',JSON.stringify({id:k.id,ts,d}));else{const r=await syFetch(syUrl(k.id),{method:'PUT',headers:{'Content-Type':'application/json'},body:JSON.stringify({ts,d})});if(!r.ok)throw syHttp(r)}SY.ts=ts}
+/* دمج ثلاثي: يُقارَن كل سجل بآخر نسخة متزامنة (SY.base). التعديل على جهة واحدة يفوز، وعند التعديل على الجهتين يفوز الأحدث. */
+function syMerge(L,R){const O=Object.assign({},R,L),B=SY.base,tsOf=x=>x.updatedAt||x.voidAt||x.doneAt||x.ts||x.createdAt||'';
+ const pick=(x,y,key)=>{const hx=syHash(x),hy=syHash(y);if(hx===hy)return x;const b=B[key];if(b===hx)return y;if(b===hy)return x;if(!!x.void!==!!y.void)return x.void?x:y;if(!!x.deleted!==!!y.deleted)return x.deleted?x:y;return tsOf(y)>tsOf(x)?y:x};
+ for(const k of COLS){const m=new Map();(R[k]||[]).forEach(y=>m.set(y.id,y));(L[k]||[]).forEach(x=>{const y=m.get(x.id);m.set(x.id,y?pick(x,y,k+':'+x.id):x)});O[k]=[...m.values()]}
+ O.settings=pick(L.settings||{},R.settings||{},'settings');
+ O.counters=Object.assign({},R.counters||{});Object.entries(L.counters||{}).forEach(([k,v])=>O.counters[k]=Math.max(v,O.counters[k]||0));
+ O.demo=!!(L.demo&&R.demo);return O}
+function syApplyDB(n){DB=n;syNorm();ensureOwner();reindex();lsSet(KEY,JSON.stringify(DB))}
+function syMergeAud(a){if(!a||!a.length)return;const ids=new Set(AUD.map(x=>x.id));AUD=AUD.concat(a.filter(x=>!ids.has(x.id))).sort(by(x=>x.ts,-1)).slice(0,6000);flushAud()}
+const syText=()=>({ok:'متزامن'+(SY.last?' · '+fmtDT(new Date(SY.last).toISOString()):''),sync:'جاري المزامنة...',pending:'تغييرات بانتظار الرفع',err:'خطأ في المزامنة: '+SY.err,offline:'غير متصل بالإنترنت',off:'غير مفعّلة'}[SY.status]||'');
+function updateSyncBtn(){const b=$('#syncbtn');if(!b)return;if(!SY.cfg){b.className='icon-btn hide';return}if(!b.firstChild)b.innerHTML=ic('cloud');b.className='icon-btn sy-'+SY.status;b.title=syText();b.setAttribute('aria-label',b.title);const i=$('#syinfo');if(i)i.textContent=b.title}
+const setSy=s=>{SY.status=s;updateSyncBtn()};
+function syNote(){if(!SY.cfg)return;clearTimeout(SY.t);SY.t=setTimeout(()=>syRun(),2500);if(SY.status!=='sync')setSy(navigator.onLine?'pending':'offline')}
+async function syRun(force){
+ if(!SY.cfg)return;if(SY.busy){SY.again=true;return}
+ if(!navigator.onLine){setSy('offline');return}
+ SY.busy=true;clearTimeout(SY.t);setSy('sync');let changed=false;
+ try{const rts=await syGetTs();let needPush=false;
+  if(rts&&(rts!==SY.ts||force)){const rem=await syGetAll();
+   if(rem){const before=JSON.stringify(syBase(DB));syApplyDB(syMerge(DB,rem.db));syMergeAud(rem.aud);const after=JSON.stringify(syBase(DB));changed=after!==before;SY.ts=rts;needPush=after!==JSON.stringify(syBase(rem.db))}
+   else needPush=true}
+  else if(!rts)needPush=true;
+  else needPush=JSON.stringify(syBase(DB))!==JSON.stringify(SY.base);
+  if(needPush)await syPut();
+  SY.base=syBase(DB);SY.last=Date.now();SY.err='';sySaveBase();setSy('ok');
+ }catch(e){SY.err=syErrMsg(e);setSy('err')}
+ SY.busy=false;
+ if(changed&&ME){const m=DB.users.find(u=>u.id===ME.id&&u.active);if(!m){ACT.logout();toast('تم إيقاف حسابك','bad')}else{ME=m;const a=document.activeElement;if(route!=='newcase'&&!(a&&/^(INPUT|TEXTAREA|SELECT)$/.test(a.tagName)))refresh()}}
+ if(SY.again){SY.again=false;syRun()}}
+function syStart(){if(!SY.cfg)return;updateSyncBtn();syRun();clearInterval(SY.timer);SY.timer=setInterval(()=>{if(!document.hidden)syRun()},45000);
+ if(!SY.started){SY.started=true;document.addEventListener('visibilitychange',()=>{if(!document.hidden)syRun()});window.addEventListener('online',()=>syRun())}}
+async function syInitialPull(){try{SY.k=null;const rem=await syGetAll();if(!rem)return false;DB=rem.db;syNorm();AUD=rem.aud;flushAud();SY.ts=rem.ts;SY.base=syBase(DB);sySaveBase();return true}catch(e){return false}}
+async function syConnect(url,code,mode){url=(url||'').trim().replace(/\/+$/,'');code=(code||'').trim();
+ if(!(/^https:\/\/script\.google\.com\/macros\/s\/[\w-]+\/exec$/i.test(url)||/^https:\/\/[^\s/]+\.(firebaseio\.com|firebasedatabase\.app)$/i.test(url)))return 'الرابط غير صحيح. المطلوب رابط تطبيق الويب من Google Apps Script وينتهي بـ /exec';
+ if(code.length<12)return 'كود المكتب قصير (12 حرفاً على الأقل)';
+ const old=SY.cfg;SY.cfg={url,code};SY.k=null;
+ try{const rem=await syGetAll();
+  if(mode==='replace'){if(!rem){SY.cfg=old;return 'لا توجد بيانات بهذا الكود. تأكد من الكود.'}
+   DB=rem.db;syNorm();ensureOwner();reindex();lsSet(KEY,JSON.stringify(DB));AUD=rem.aud;flushAud();SY.ts=rem.ts;SY.base=syBase(DB);SY.last=Date.now();sySaveBase();lsSet(SYNCK,JSON.stringify(SY.cfg));setSy('ok')}
+  else{lsSet(SYNCK,JSON.stringify(SY.cfg));SY.ts=0;SY.base={};await syRun(true);if(SY.status==='err'){const m=SY.err;SY.cfg=old;lsSet(SYNCK,JSON.stringify(old));return m}}
+ }catch(e){SY.cfg=old;SY.k=null;return syErrMsg(e)}
+ syStart();return ''}
+const syLinkCode=()=>'SO1.'+toB64(new TextEncoder().encode(JSON.stringify({u:SY.cfg.url,c:SY.cfg.code})));
+const syParseLink=s=>{try{s=(s||'').trim();if(s.startsWith('SO1.'))s=s.slice(4);const o=JSON.parse(new TextDecoder().decode(fromB64(s)));return o.u&&o.c?o:null}catch(e){return null}};
+function syncCard(){const on=!!SY.cfg;
+ return `<section class="card"><div class="card-h"><h3>المزامنة السحابية (فتح البيانات من أي جهاز)</h3></div>`+(on?
+ `<p class="muted sm" style="margin-top:0">الحالة: <b id="syinfo">${esc(syText())}</b></p><div class="btns"><button class="btn primary" data-act="syncNow">مزامنة الآن</button><button class="btn" data-act="syCopyLink">${ic('copy')} نسخ كود ربط جهاز جديد</button><button class="btn danger" data-act="syOff">إيقاف المزامنة على هذا الجهاز</button></div><p class="muted sm" style="margin-bottom:0">على الجهاز الجديد: من شاشة الدخول اضغط «ربط هذا الجهاز بمكتب موجود» والصق الكود. الكود سري: من يملكه يقدر يقرأ بيانات المكتب.</p>`:
+ `<p class="muted sm" style="margin-top:0">البيانات تُشفَّر على جهازك قبل رفعها، والخادم لا يرى إلا نصاً مشفراً. خطوات التجهيز في ملف README-ar.md (ملف Code.gs داخل المجلد).</p><form data-form="sync">${F.t('url','رابط تطبيق الويب (Google Sheets) — ينتهي بـ /exec','','placeholder="https://script.google.com/macros/s/.../exec" dir="ltr" required')}<div class="field"><label for="syc">كود المكتب السري</label><div style="display:flex;gap:8px"><input id="syc" name="code" dir="ltr" required class="inp" style="flex:1" autocomplete="off"><button type="button" class="btn" data-act="syGen">توليد</button></div><span class="help">احتفظ به في مكان آمن. بدونه لا يمكن فتح البيانات من جهاز آخر.</span></div><div class="formerr" role="alert"></div><button class="btn primary" type="submit">تفعيل المزامنة</button></form>`)+`</section>`}
+ACT.syGen=(d,b)=>{const A='ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz23456789',r=crypto.getRandomValues(new Uint8Array(24));b.closest('form').elements.code.value=[...r].map(x=>A[x%A.length]).join('')};
+FORMS.sync=async(d,f)=>{if(!isAdm())return;ferr(f,'جاري الاتصال والمزامنة...');const e=await syConnect(d.url,d.code,'merge');if(e)return ferr(f,e);refresh();toast('تم تفعيل المزامنة','good')};
+ACT.syncNow=async()=>{await syRun(true);toast(SY.status==='ok'?'تمت المزامنة':'تعذرت المزامنة: '+SY.err,SY.status==='ok'?'good':'bad')};
+ACT.syCopyLink=()=>{if(isAdm()&&SY.cfg)copyText(syLinkCode())};
+ACT.syOff=()=>ask('سيتوقف هذا الجهاز عن المزامنة وتبقى بياناته عليه كما هي. تقدر تعيد التفعيل لاحقاً.','إيقاف',()=>{SY.cfg=null;SY.k=null;SY.base={};SY.ts=0;lsSet(SYNCK,'null');lsSet(SYNCB,'null');clearInterval(SY.timer);setSy('off');refresh()},true);
+ACT.linkDev=()=>pushModal({title:'ربط الجهاز بمكتب موجود',body:()=>`<form data-form="linkdev"><p class="muted" style="margin:0">الصق كود الربط الذي نسخته من إعدادات المزامنة في الجهاز الأول. سيتم استبدال بيانات هذا الجهاز ببيانات المكتب.</p>${F.a('lc','كود الربط','','required dir="ltr"')}<div class="formerr" role="alert"></div><button class="btn primary" type="submit">ربط وتنزيل البيانات</button></form>`});
+FORMS.linkdev=async(d,f)=>{const o=syParseLink(d.lc);if(!o)return ferr(f,'الكود غير صحيح');ferr(f,'جاري تنزيل البيانات...');const e=await syConnect(o.u,o.c,'replace');if(e)return ferr(f,e);closeModal();toast('تم الربط وتنزيل البيانات','good');showLogin()};
+/* تثبيت التطبيق (PWA) */
+let DEFP=null;window.addEventListener('beforeinstallprompt',e=>{e.preventDefault();DEFP=e});
+ACT.installApp=async()=>{if(DEFP){DEFP.prompt();try{await DEFP.userChoice}catch(e){}DEFP=null;return}toast('من قائمة المتصفح اختر «تثبيت التطبيق» أو «إضافة إلى الشاشة الرئيسية». على iPhone: زر المشاركة ثم «إضافة إلى الشاشة الرئيسية».')};
+
+/* ================= الإقلاع ================= */
+(async function boot(){
+ document.documentElement.dir='rtl';document.documentElement.lang='ar';applyTheme();loadAud();
+ try{const raw=lsGet(KEY);if(raw)DB=JSON.parse(raw)}catch(e){DB=null}
+ syLoad();
+ if(!DB||!DB.users||!DB.users.length){if(!(SY.cfg&&await syInitialPull()))await seed()}
+ DB.audit=DB.audit||[];DB.docs=DB.docs||[];DB.tasks=DB.tasks||[];DB.counters=DB.counters||{};DB.settings=DB.settings||{};
+ if(DB.settings.office==='مكتب النخبة للخدمات')DB.settings.office='سمارت اوفيس';
+ await migratePw();ensureOwner();
+ if(DB.audit.length){const ids=new Set(AUD.map(x=>x.id));AUD=AUD.concat(DB.audit.filter(x=>!ids.has(x.id))).sort(by(x=>x.ts,-1)).slice(0,6000);DB.audit=[];flushAud()}
+ document.title=appName();save();snapshot();
+ let sid=null;try{sid=sessionStorage.getItem('so.uid')}catch(e){}
+ const u=sid&&DB.users.find(x=>x.id===sid&&x.active);if(u)enter(u,false);else showLogin();
+ syStart();
+ if('serviceWorker' in navigator&&/^https?:$/.test(location.protocol)&&!window.Capacitor)navigator.serviceWorker.register('sw.js').catch(()=>{});
+})();
+</script>
+
+</body></html>
