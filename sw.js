@@ -1,5 +1,5 @@
 /* Service worker: يخزّن ملفات التطبيق ليعمل بدون إنترنت. بيانات Firebase لا تُخزَّن أبداً. */
-const V='smartoffice-v1';
+const V="smartoffice-v2";
 const CORE=['./','index.html','manifest.json','icon-192.png','icon-512.png'];
 self.addEventListener('install',e=>{e.waitUntil(caches.open(V).then(c=>c.addAll(CORE)).then(()=>self.skipWaiting()))});
 self.addEventListener('activate',e=>{e.waitUntil(caches.keys().then(ks=>Promise.all(ks.filter(k=>k!==V).map(k=>caches.delete(k)))).then(()=>self.clients.claim()))});

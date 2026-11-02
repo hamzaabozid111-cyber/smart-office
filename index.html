@@ -606,7 +606,7 @@ const go=r=>{if(location.hash==='#'+r)render();else location.hash=r};
 ACT.go=d=>{closeAll();go(d.to)};
 /* الدخول */
 const appName=()=>DB.settings.appName||'SMART OFFICE';
-const brandLogo=()=>DB.settings.logo?`<img src="${esc(DB.settings.logo)}" alt="">`:ic('spark');
+const brandLogo=()=>`<img src="${DB.settings.logo?esc(DB.settings.logo):'icon-192.png'}" alt="">`;
 let LOGIN={fails:0,until:0};
 function showLogin(){$('#shell').classList.add('hide');$('#bottom').classList.add('hide');const l=$('#login');l.classList.remove('hide');document.title=appName();
  l.innerHTML=`<form class="login" data-form="login"><div class="brand"><div class="logo">${brandLogo()}</div><div><b>${esc(appName())}</b><small>${esc(DB.settings.office)}</small></div></div>
